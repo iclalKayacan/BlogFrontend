@@ -49,7 +49,7 @@ const Footer = () => {
         </div>
 
         {/* Social */}
-        <div className="space-y-4">
+        <div className="space-y-4 ml-10">
           <h3 className="text-2xl font-semibold">Social</h3>
           <ul className="space-y-4">
             <li>

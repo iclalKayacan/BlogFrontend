@@ -2,12 +2,11 @@ import React from "react";
 
 const LatestPosts = () => {
   return (
-    <section className="py-12 bg-backgroundLight dark:bg-backgroundDark">
-      <div
-        id="latest-posts"
-        className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8"
-      >
-        {/* Son Yazılar - Sol Tarafta */}
+    <section
+      id="latest-posts"
+      className="py-12 pb-32 bg-backgroundLight dark:bg-backgroundDark"
+    >
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
         <div className="md:col-span-2">
           <h2 className="text-3xl font-bold mb-6 text-textDark dark:text-textLight">
             Latest Posts
@@ -18,9 +17,10 @@ const LatestPosts = () => {
             className="bg-gray-800 text-white p-8 h-[400px] flex flex-col justify-end rounded-lg mb-8 bg-cover bg-center"
             style={{ backgroundImage: "url('/assets/manzara.jpg')" }}
           >
-            <span className="inline-block bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold w-auto">
+            <span className="inline-block bg-yellow-400 text-gray-800 px-2 py-1 rounded-full text-sm font-semibold">
               Seyahat
             </span>
+
             <h3 className="text-3xl font-bold mt-4">
               5 Lezzetli ve Pratik Yemek Tarifiyle Sofranızı Şenlendirin
             </h3>

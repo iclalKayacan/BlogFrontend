@@ -1,16 +1,20 @@
 import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
-import HomePage from "./pages/Home";
+import BlogList from "./pages/BlogList";
+import Home from "./pages/Home";
 import Footer from "./components/Footer";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      {/* Header */}
+    <Router>
       <Header />
-      <HomePage />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/blogs" element={<BlogList />} />
+      </Routes>
       <Footer />
-    </div>
+    </Router>
   );
 }
 

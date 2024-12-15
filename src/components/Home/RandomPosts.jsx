@@ -2,7 +2,7 @@ import React from "react";
 
 const RandomPosts = () => {
   return (
-    <section className="py-8 bg-backgroundGray min-h-[800px]">
+    <section className="py-8 bg-backgroundGray dark:bg-backgroundDark min-h-[800px]">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-20">
         {/* Sol Tarafta Büyük Görsel */}
         <div
