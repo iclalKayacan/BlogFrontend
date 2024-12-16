@@ -4,16 +4,25 @@ import Header from "./components/Header";
 import BlogList from "./pages/BlogList";
 import Home from "./pages/Home";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/blogs" element={<BlogList />} />
-      </Routes>
-      <Footer />
+      <div className="flex flex-col min-h-screen">
+        <Header />
+
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/blogs" element={<BlogList />} />
+          </Routes>
+        </main>
+
+        <Footer />
+
+        <ScrollToTop />
+      </div>
     </Router>
   );
 }
