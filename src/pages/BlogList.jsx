@@ -33,6 +33,7 @@ const BlogList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [displayedBlogs, setDisplayedBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true); // Yeni loading state
   const blogsPerPage = 6;
 
   // Filtrelenmiş kategoriler
@@ -48,10 +49,19 @@ const BlogList = () => {
   const totalBlogs = filteredBlogs.length;
 
   useEffect(() => {
-    const initialBlogs = filteredBlogs.slice(0, blogsPerPage);
-    setDisplayedBlogs(initialBlogs);
+    setLoading(true); // Yükleme başlıyor
+    const initialBlogs = blogs
+      .filter((blog) =>
+        selectedCategory === "Tümü" ? true : blog.category === selectedCategory
+      )
+      .slice(0, blogsPerPage);
+
+    setTimeout(() => {
+      setDisplayedBlogs(initialBlogs);
+      setLoading(false); // Yükleme tamamlandı
+    }, 500); // 0.5 saniye gecikme (opsiyonel)
     setCurrentPage(1);
-  }, [selectedCategory, filteredBlogs]);
+  }, [selectedCategory]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,6 +89,7 @@ const BlogList = () => {
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setDisplayedBlogs([]);
+    setLoading(true);
   };
 
   return (
@@ -127,7 +138,11 @@ const BlogList = () => {
       {/* Sağ Tarafta Blog Kartları */}
       <div className="w-3/4 ml-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCategories.length > 0 ? (
+          {loading ? (
+            <p className="text-gray-600 dark:text-gray-400 w-full text-center">
+              Bloglar yükleniyor...
+            </p>
+          ) : filteredCategories.length > 0 ? (
             displayedBlogs.length > 0 ? (
               displayedBlogs.map((blog) => (
                 <BlogCard key={blog.id} blog={blog} />

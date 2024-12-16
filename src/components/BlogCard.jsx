@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import CategoryBadge from "./CategoryBadge";
 
 const BlogCard = ({ blog }) => {
@@ -23,12 +24,12 @@ const BlogCard = ({ blog }) => {
           </p>
         </div>
         {/* Devamını Oku */}
-        <a
-          href={`/blogs/${blog.id}`}
+        <Link
+          to={`/blogs/${blog.id}`}
           className="text-primary hover:underline mt-2"
         >
           Devamını Oku
-        </a>
+        </Link>
       </div>
     </div>
   );
