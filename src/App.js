@@ -5,8 +5,8 @@ import BlogList from "./pages/BlogList";
 import Home from "./pages/Home";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
-import BlogCard from "./components/BlogCard"; 
-import BlogDetails from "./pages/BlogDetails"; 
+import BlogCard from "./components/BlogCard";
+import BlogDetails from "./pages/BlogDetails";
 
 function App() {
   const blogs = [
@@ -39,6 +39,8 @@ function App() {
 
         <main className="flex-grow">
           <Routes>
+            <Route path="/" element={<Home />} />
+
             <Route
               path="/"
               element={
@@ -51,7 +53,6 @@ function App() {
             />
             <Route path="/blogs/:id" element={<BlogDetails />} />
 
-            <Route path="/" element={<Home />} />
             <Route path="/blogs" element={<BlogList />} />
           </Routes>
         </main>
