@@ -23,14 +23,14 @@ const Header = () => {
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <FaPenNib className="text-3xl text-primary" />
-          <h1 className="text-3xl font-bold text-textDark dark:text-textLight">
+          <h1 className="text-2xl font-bold text-textDark dark:text-textLight">
             Blog System
           </h1>
         </div>
 
         {/* Navigation Links */}
         <nav>
-          <ul className="flex space-x-6 text-lg text-textDark dark:text-textLight ">
+          <ul className="flex space-x-6 text-base text-textDark dark:text-textLight ">
             <li>
               <a href="/" className="hover:text-primary">
                 Ana Sayfa

@@ -16,7 +16,7 @@ const BlogCard = ({ blog }) => {
           {/* Kategori Badge */}
           <CategoryBadge category={blog.category} />
 
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mt-2">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mt-2">
             {blog.title}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mt-2 line-clamp-3">

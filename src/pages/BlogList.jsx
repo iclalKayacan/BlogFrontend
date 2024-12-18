@@ -2,22 +2,29 @@ import React, { useState, useEffect } from "react";
 import BlogCard from "../components/BlogCard";
 
 const BlogList = () => {
-  const [blogs] = useState([
-    ...Array.from({ length: 30 }, (_, i) => ({
-      id: i + 1,
-      title: `Blog Başlık ${i + 1}`,
-      summary: `Blog Özeti ${i + 1}`,
-      image: "https://via.placeholder.com/300x200",
-      category: [
-        "React",
-        "JavaScript",
-        "CSS",
-        "Teknoloji",
-        "Sağlık",
-        "Yemek Tarifleri",
-      ][i % 6],
-    })),
-  ]);
+  const blogs = Array.from({ length: 30 }, (_, i) => ({
+    id: i + 1,
+    title: `Blog Başlık ${i + 1}`,
+    summary: `Blog Özeti ${i + 1}`,
+    image: `/assets/${
+      [
+        "book.jpg",
+        "beach.jpg",
+        "cake.jpg",
+        "hakkimizda.jpg",
+        "makyaj.jpg",
+        "movie.jpg",
+      ][i % 6]
+    }`, // URL kullanımı
+    category: [
+      "React",
+      "JavaScript",
+      "CSS",
+      "Teknoloji",
+      "Sağlık",
+      "Yemek Tarifleri",
+    ][i % 6],
+  }));
 
   const [categories] = useState([
     "Tümü",
@@ -93,7 +100,7 @@ const BlogList = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 flex">
+    <div className="container mx-auto px-4 py-8 flex max-w-7xl">
       {/* Sol Tarafta Kategoriler */}
       <div className="w-1/4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">

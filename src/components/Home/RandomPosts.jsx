@@ -28,7 +28,7 @@ const RandomPosts = () => {
         <div className="space-y-4">
           {/* Kart 1 */}
           <div
-            className="relative h-[225px] bg-cover bg-center rounded-lg"
+            className="relative h-[230px] bg-cover bg-center rounded-lg"
             style={{ backgroundImage: "url('/assets/teknoloji.jpg')" }}
           >
             <div className="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
@@ -44,7 +44,7 @@ const RandomPosts = () => {
 
           {/* Kart 2 */}
           <div
-            className="relative h-[175px] bg-cover bg-center rounded-lg"
+            className="relative h-[200px] bg-cover bg-center rounded-lg "
             style={{ backgroundImage: "url('/assets/makyaj.jpg')" }}
           >
             <div className="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
