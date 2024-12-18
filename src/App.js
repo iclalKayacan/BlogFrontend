@@ -7,6 +7,9 @@ import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import BlogCard from "./components/BlogCard";
 import BlogDetails from "./pages/BlogDetails";
+import AdminPanel from "./pages/AdminPanel";
+import AdminBlogManagement from "./pages/AdminBlogManagement";
+import AdminBlogFormPage from "./pages/AdminBlogFormPage";
 
 function App() {
   const blogs = [
@@ -40,7 +43,10 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
-
+            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/blogs" element={<AdminBlogManagement />} />
+            <Route path="/admin/blogs/new" element={<AdminBlogFormPage />} />
+            <Route path="/admin/blogs/:id" element={<AdminBlogFormPage />} />
             <Route
               path="/"
               element={
