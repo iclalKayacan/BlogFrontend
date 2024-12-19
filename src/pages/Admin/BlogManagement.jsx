@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import AdminBlogList from "../../components/Admin/AdminBlogList";
 import AdminBlogForm from "../../components/Admin/AdminBlogForm";
 import AdminBlogEdit from "../../components/Admin/AdminBlogEdit";
@@ -8,11 +8,14 @@ import CategoryManagement from "../../components/Admin/CategoryManagement";
 import TagManagement from "../../components/Admin/TagManagement";
 import CommentManagement from "../../components/Admin/CommentManagement";
 import AdminDashboard from "../../components/Admin/AdminDashboard";
+import { ThemeContext } from "../../contexts/ThemeContext";
 
 const BlogManagement = () => {
+  const { darkMode } = useContext(ThemeContext);
+
   const [blogs, setBlogs] = useState([]);
   const [editingBlog, setEditingBlog] = useState(null);
-  const [view, setView] = useState("blogs"); // blogs, users, categories, tags
+  const [view, setView] = useState("blogs");
   const [users, setUsers] = useState([
     { id: 1, name: "John Doe", email: "john@example.com" },
     { id: 2, name: "Jane Smith", email: "jane@example.com" },
@@ -120,7 +123,13 @@ const BlogManagement = () => {
   };
 
   return (
-    <div className="flex">
+    <div
+      className={`${
+        darkMode
+          ? "bg-backgroundDark text-textDark"
+          : "bg-backgroundLight text-textLight"
+      } flex`}
+    >
       <AdminSidebar setView={setView} />
       <div className="flex-1 p-4">
         {view === "dashboard" && <AdminDashboard stats={stats} />}

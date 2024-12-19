@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FaSearch, FaRegUser, FaSun, FaMoon, FaPenNib } from "react-icons/fa";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 const Header = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useContext(ThemeContext);
 
   useEffect(() => {
     if (darkMode) {
@@ -11,11 +12,6 @@ const Header = () => {
       document.documentElement.classList.remove("dark");
     }
   }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    console.log("Dark mode toggled");
-    setDarkMode((prevMode) => !prevMode);
-  };
 
   return (
     <header className="bg-backgroundLight dark:bg-backgroundDark shadow-md ">

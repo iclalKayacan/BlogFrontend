@@ -8,6 +8,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import BlogCard from "./components/BlogCard";
 import BlogDetails from "./pages/BlogDetails";
 import BlogManagement from "./pages/Admin/BlogManagement";
+import ThemeProvider from "./contexts/ThemeContext";
 
 function App() {
   const handleDelete = (id) => {
@@ -39,43 +40,45 @@ function App() {
   ];
 
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        <Header />
+    <ThemeProvider>
+      <Router>
+        <div className="flex flex-col min-h-screen">
+          <Header />
 
-        <main className="flex-grow">
-          <Routes>
-            {/* Ana Sayfa */}
-            <Route path="/" element={<Home />} />
+          <main className="flex-grow">
+            <Routes>
+              {/* Ana Sayfa */}
+              <Route path="/" element={<Home />} />
 
-            {/* Blog Kartları */}
-            <Route
-              path="/"
-              element={
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {blogs.map((blog) => (
-                    <BlogCard key={blog.id} blog={blog} />
-                  ))}
-                </div>
-              }
-            />
+              {/* Blog Kartları */}
+              <Route
+                path="/"
+                element={
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {blogs.map((blog) => (
+                      <BlogCard key={blog.id} blog={blog} />
+                    ))}
+                  </div>
+                }
+              />
 
-            {/* Blog Detay Sayfası */}
-            <Route path="/blogs/:id" element={<BlogDetails />} />
+              {/* Blog Detay Sayfası */}
+              <Route path="/blogs/:id" element={<BlogDetails />} />
 
-            {/* Blog Listesi */}
-            <Route path="/blogs" element={<BlogList />} />
+              {/* Blog Listesi */}
+              <Route path="/blogs" element={<BlogList />} />
 
-            {/* Admin Paneli */}
-            <Route path="/admin/blogs" element={<BlogManagement />} />
-          </Routes>
-        </main>
+              {/* Admin Paneli */}
+              <Route path="/admin/blogs" element={<BlogManagement />} />
+            </Routes>
+          </main>
 
-        <Footer />
+          <Footer />
 
-        <ScrollToTop />
-      </div>
-    </Router>
+          <ScrollToTop />
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
