@@ -22,7 +22,9 @@ const TagManagement = ({ tags, onTagAdded, onTagUpdated, onTagDeleted }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-textDark mb-6">Etiket Yönetimi</h2>
+      <h2 className="text-2xl font-bold text-textDark dark:text-textLight mb-6">
+        Etiket Yönetimi
+      </h2>
 
       {/* Etiket Tablosu */}
       <table className="w-full bg-white shadow rounded-lg overflow-hidden mb-6">

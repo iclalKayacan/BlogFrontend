@@ -27,7 +27,7 @@ const CategoryManagement = ({
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-textDark mb-6">
+      <h2 className="text-2xl font-bold text-textDark dark:text-textLight mb-6">
         Kategori Yönetimi
       </h2>
 

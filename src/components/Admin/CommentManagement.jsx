@@ -13,8 +13,9 @@ const CommentManagement = ({ comments, onApprove, onDelete }) => {
   };
 
   return (
-    <div className="p-6 bg-backgroundGray rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-textDark mb-6">Yorum Yönetimi</h2>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold text-textDark dark:text-textLight mb-6">
+      Yorum Yönetimi</h2>
 
       {/* Onaylama Mesajı */}
       {approvedMessage && (
@@ -31,10 +32,10 @@ const CommentManagement = ({ comments, onApprove, onDelete }) => {
             key={comment.id}
             className="border border-inputGray p-4 mb-4 rounded-lg bg-white shadow-md hover:shadow-lg transition"
           >
-            <p className="text-sm text-gray-600 mb-2">
-              Yazan: {comment.author}
+            <p className="text-sm text-gray-800 mb-2">
+              Yazan: <span className="font-semibold">{comment.author}</span>
             </p>
-            <p className="mb-4">{comment.content}</p>
+            <p className="text-base text-gray-700 mb-4">{comment.content}</p>
             <div className="flex space-x-4">
               <button
                 onClick={() => handleApprove(comment.id)}

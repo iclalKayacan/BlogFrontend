@@ -56,7 +56,6 @@ const AdminSidebar = ({ setView }) => {
             💬 Yorum Yönetimi
           </button>
         </li>
-        
       </ul>
     </div>
   );
