@@ -24,15 +24,16 @@ const AdminBlogForm = ({ onBlogAdded }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mb-4 mx-auto max-w-4xl p-4 bg-white shadow rounded"
+      className="mb-6 mx-auto max-w-4xl p-6 bg-backgroundGray rounded-lg shadow-lg"
     >
+      <h2 className="text-2xl font-bold text-textDark mb-4">Yeni Blog Ekle</h2>
       {/* Başlık */}
       <input
         type="text"
         placeholder="Başlık"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="border p-2 w-full mb-4 rounded"
+        className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
       {/* ReactQuill Editör */}
@@ -40,8 +41,8 @@ const AdminBlogForm = ({ onBlogAdded }) => {
         <ReactQuill
           value={content}
           onChange={setContent}
-          style={{ height: "250px", marginBottom: "10px" }} // Alt kenar çizgisiyle arayı açar
-          className="rounded"
+          style={{ height: "200px" }}
+          className="rounded-lg"
         />
       </div>
 
@@ -51,15 +52,15 @@ const AdminBlogForm = ({ onBlogAdded }) => {
         placeholder="Yazar"
         value={author}
         onChange={(e) => setAuthor(e.target.value)}
-        className="border p-2 w-full mb-4 rounded"
-        style={{ marginTop: "40px" }} 
+        className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+        style={{ marginTop: "40px" }}
       />
 
       {/* Durum */}
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value)}
-        className="border p-2 w-full mb-4 rounded"
+        className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
       >
         <option value="taslak">Taslak</option>
         <option value="yayınlanmış">Yayınlanmış</option>
@@ -68,7 +69,7 @@ const AdminBlogForm = ({ onBlogAdded }) => {
       {/* Ekle Butonu */}
       <button
         type="submit"
-        className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+        className="bg-primary text-textLight px-6 py-3 rounded-lg hover:bg-secondary transition"
       >
         Ekle
       </button>

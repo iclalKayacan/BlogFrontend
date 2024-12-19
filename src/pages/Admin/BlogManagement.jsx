@@ -5,11 +5,13 @@ import AdminBlogEdit from "../../components/Admin/AdminBlogEdit";
 import AdminSidebar from "../../components/Admin/AdminSidebar";
 import UserManagement from "../../components/Admin/UserManagement";
 import CategoryManagement from "../../components/Admin/CategoryManagement";
+import TagManagement from "../../components/Admin/TagManagement";
+import CommentManagement from "../../components/Admin/CommentManagement";
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
   const [editingBlog, setEditingBlog] = useState(null);
-  const [view, setView] = useState("blogs"); // blogs, users, categories
+  const [view, setView] = useState("blogs"); // blogs, users, categories, tags
   const [users, setUsers] = useState([
     { id: 1, name: "John Doe", email: "john@example.com" },
     { id: 2, name: "Jane Smith", email: "jane@example.com" },
@@ -17,6 +19,24 @@ const BlogManagement = () => {
   const [categories, setCategories] = useState([
     { id: 1, name: "Teknoloji" },
     { id: 2, name: "Sağlık" },
+  ]);
+  const [tags, setTags] = useState([
+    { id: 1, name: "React" },
+    { id: 2, name: "JavaScript" },
+  ]);
+  const [comments, setComments] = useState([
+    {
+      id: 1,
+      author: "John Doe",
+      content: "Bu çok faydalı bir yazı!",
+      approved: false,
+    },
+    {
+      id: 2,
+      author: "Jane Smith",
+      content: "Harika bir paylaşım, teşekkürler!",
+      approved: true,
+    },
   ]);
 
   const handleAddBlog = (newBlog) => {
@@ -65,6 +85,29 @@ const BlogManagement = () => {
     setCategories(categories.filter((category) => category.id !== categoryId));
   };
 
+  const handleTagAdded = (newTag) => {
+    setTags([...tags, { id: Date.now(), name: newTag }]);
+  };
+
+  const handleTagUpdated = (updatedTag) => {
+    setTags(tags.map((tag) => (tag.id === updatedTag.id ? updatedTag : tag)));
+  };
+
+  const handleTagDeleted = (tagId) => {
+    setTags(tags.filter((tag) => tag.id !== tagId));
+  };
+  const handleApproveComment = (commentId) => {
+    setComments(
+      comments.map((comment) =>
+        comment.id === commentId ? { ...comment, approved: true } : comment
+      )
+    );
+  };
+
+  const handleDeleteComment = (commentId) => {
+    setComments(comments.filter((comment) => comment.id !== commentId));
+  };
+
   return (
     <div className="flex">
       <AdminSidebar setView={setView} />
@@ -97,6 +140,21 @@ const BlogManagement = () => {
             onCategoryAdded={handleCategoryAdded}
             onCategoryUpdated={handleCategoryUpdated}
             onCategoryDeleted={handleCategoryDeleted}
+          />
+        )}
+        {view === "tags" && (
+          <TagManagement
+            tags={tags}
+            onTagAdded={handleTagAdded}
+            onTagUpdated={handleTagUpdated}
+            onTagDeleted={handleTagDeleted}
+          />
+        )}
+        {view === "comments" && (
+          <CommentManagement
+            comments={comments}
+            onApprove={handleApproveComment}
+            onDelete={handleDeleteComment}
           />
         )}
       </div>

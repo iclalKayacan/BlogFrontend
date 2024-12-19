@@ -8,7 +8,12 @@ const UserManagement = ({ users, onUserUpdated, onUserDeleted }) => {
   };
 
   const handleDelete = (userId) => {
-    onUserDeleted(userId);
+    const confirmed = window.confirm(
+      "Bu kullanıcıyı silmek istediğinize emin misiniz?"
+    );
+    if (confirmed) {
+      onUserDeleted(userId);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -18,33 +23,40 @@ const UserManagement = ({ users, onUserUpdated, onUserDeleted }) => {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Kullanıcı Yönetimi</h2>
-      <table className="w-full border mb-4">
+    <div className="p-6">
+      <h2 className="text-2xl font-bold text-textDark mb-6">
+        Kullanıcı Yönetimi
+      </h2>
+
+      {/* Kullanıcı Tablosu */}
+      <table className="w-full bg-white shadow rounded-lg overflow-hidden mb-6">
         <thead>
-          <tr className="bg-gray-200">
-            <th className="p-2 border">ID</th>
-            <th className="p-2 border">Ad</th>
-            <th className="p-2 border">E-posta</th>
-            <th className="p-2 border">İşlemler</th>
+          <tr className="bg-primary text-textLight">
+            <th className="p-3 text-left">ID</th>
+            <th className="p-3 text-left">Ad</th>
+            <th className="p-3 text-left">E-posta</th>
+            <th className="p-3 text-left">İşlemler</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.id}>
-              <td className="p-2 border">{user.id}</td>
-              <td className="p-2 border">{user.name}</td>
-              <td className="p-2 border">{user.email}</td>
-              <td className="p-2 border">
+            <tr
+              key={user.id}
+              className="even:bg-backgroundGray hover:bg-inputGray transition"
+            >
+              <td className="p-3 text-textDark font-medium">{user.id}</td>
+              <td className="p-3 text-textDark">{user.name}</td>
+              <td className="p-3 text-textDark">{user.email}</td>
+              <td className="p-3">
                 <button
                   onClick={() => handleEdit(user)}
-                  className="bg-blue-500 text-white px-4 py-1 rounded mr-2"
+                  className="bg-secondary text-textLight px-4 py-2 rounded-lg mr-2 hover:bg-primary transition"
                 >
                   Düzenle
                 </button>
                 <button
                   onClick={() => handleDelete(user.id)}
-                  className="bg-red-500 text-white px-4 py-1 rounded"
+                  className="bg-red-500 text-textLight px-4 py-2 rounded-lg hover:bg-red-600 transition"
                 >
                   Sil
                 </button>
@@ -54,16 +66,22 @@ const UserManagement = ({ users, onUserUpdated, onUserDeleted }) => {
         </tbody>
       </table>
 
+      {/* Kullanıcı Düzenleme Formu */}
       {selectedUser && (
-        <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-bold mb-4">Kullanıcı Düzenle</h3>
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-6 rounded-lg shadow-md"
+        >
+          <h3 className="text-xl font-bold text-textDark mb-4">
+            Kullanıcı Düzenle
+          </h3>
           <input
             type="text"
             value={selectedUser.name}
             onChange={(e) =>
               setSelectedUser({ ...selectedUser, name: e.target.value })
             }
-            className="border p-2 w-full mb-2"
+            className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="Ad"
           />
           <input
@@ -72,12 +90,12 @@ const UserManagement = ({ users, onUserUpdated, onUserDeleted }) => {
             onChange={(e) =>
               setSelectedUser({ ...selectedUser, email: e.target.value })
             }
-            className="border p-2 w-full mb-2"
+            className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="E-posta"
           />
           <button
             type="submit"
-            className="bg-green-500 text-white px-4 py-2 rounded"
+            className="bg-primary text-textLight px-6 py-2 rounded-lg hover:bg-secondary transition"
           >
             Güncelle
           </button>

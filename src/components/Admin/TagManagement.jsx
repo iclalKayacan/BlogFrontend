@@ -1,60 +1,53 @@
 import React, { useState } from "react";
 
-const CategoryManagement = ({
-  categories,
-  onCategoryAdded,
-  onCategoryUpdated,
-  onCategoryDeleted,
-}) => {
-  const [newCategory, setNewCategory] = useState("");
-  const [editingCategory, setEditingCategory] = useState(null);
+const TagManagement = ({ tags, onTagAdded, onTagUpdated, onTagDeleted }) => {
+  const [newTag, setNewTag] = useState("");
+  const [editingTag, setEditingTag] = useState(null);
 
   const handleAdd = (e) => {
     e.preventDefault();
-    onCategoryAdded(newCategory);
-    setNewCategory("");
+    onTagAdded(newTag);
+    setNewTag("");
   };
 
-  const handleEdit = (category) => {
-    setEditingCategory(category);
+  const handleEdit = (tag) => {
+    setEditingTag(tag);
   };
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    onCategoryUpdated(editingCategory);
-    setEditingCategory(null);
+    onTagUpdated(editingTag);
+    setEditingTag(null);
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-textDark mb-6">
-        Kategori Yönetimi
-      </h2>
+    <div className="p-6 bg-backgroundGray rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-textDark mb-6">Etiket Yönetimi</h2>
 
-      {/* Kategori Tablosu */}
+      {/* Etiket Tablosu */}
       <table className="w-full bg-white shadow rounded-lg overflow-hidden mb-6">
         <thead>
           <tr className="bg-primary text-textLight">
-            <th className="p-3 text-left">Kategori</th>
+            <th className="p-3 text-left">Etiket</th>
             <th className="p-3 text-left">İşlemler</th>
           </tr>
         </thead>
         <tbody>
-          {categories.map((category) => (
+          {tags.map((tag) => (
             <tr
-              key={category.id}
+              key={tag.id}
               className="even:bg-backgroundGray hover:bg-inputGray transition"
             >
-              <td className="p-3 text-textDark font-medium">{category.name}</td>
+              <td className="p-3 text-textDark font-medium">{tag.name}</td>
               <td className="p-3">
                 <button
-                  onClick={() => handleEdit(category)}
-                  className="bg-secondary text-textLight px-4 py-2 rounded-lg mr-2 hover:bg-primary transition"
+                  onClick={() => handleEdit(tag)}
+                  className="bg-secondary text-textLight px-4 py-2 rounded-lg mr-2 hover:bg-hoverSunYellow transition"
                 >
                   Düzenle
                 </button>
                 <button
-                  onClick={() => onCategoryDeleted(category.id)}
+                  onClick={() => onTagDeleted(tag.id)}
                   className="bg-red-500 text-textLight px-4 py-2 rounded-lg hover:bg-red-600 transition"
                 >
                   Sil
@@ -65,23 +58,23 @@ const CategoryManagement = ({
         </tbody>
       </table>
 
-      {/* Kategori Formları */}
-      {editingCategory ? (
+      {/* Etiket Formları */}
+      {editingTag ? (
         <form
           onSubmit={handleUpdate}
           className="bg-white p-6 rounded-lg shadow-md"
         >
           <h3 className="text-xl font-bold text-textDark mb-4">
-            Kategori Düzenle
+            Etiket Düzenle
           </h3>
           <input
             type="text"
-            value={editingCategory.name}
+            value={editingTag.name}
             onChange={(e) =>
-              setEditingCategory({ ...editingCategory, name: e.target.value })
+              setEditingTag({ ...editingTag, name: e.target.value })
             }
             className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="Kategori Adı"
+            placeholder="Etiket Adı"
           />
           <button
             type="submit"
@@ -96,14 +89,14 @@ const CategoryManagement = ({
           className="bg-white p-6 rounded-lg shadow-md"
         >
           <h3 className="text-xl font-bold text-textDark mb-4">
-            Yeni Kategori Ekle
+            Yeni Etiket Ekle
           </h3>
           <input
             type="text"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
             className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="Kategori Adı"
+            placeholder="Etiket Adı"
           />
           <button
             type="submit"
@@ -117,4 +110,4 @@ const CategoryManagement = ({
   );
 };
 
-export default CategoryManagement;
+export default TagManagement;
