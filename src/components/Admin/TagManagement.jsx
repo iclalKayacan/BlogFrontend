@@ -21,7 +21,7 @@ const TagManagement = ({ tags, onTagAdded, onTagUpdated, onTagDeleted }) => {
   };
 
   return (
-    <div className="p-6 bg-backgroundGray rounded-lg shadow-md">
+    <div className="p-6">
       <h2 className="text-2xl font-bold text-textDark mb-6">Etiket Yönetimi</h2>
 
       {/* Etiket Tablosu */}

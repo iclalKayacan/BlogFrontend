@@ -10,6 +10,14 @@ const AdminSidebar = ({ setView }) => {
       <ul className="p-4 space-y-4">
         <li>
           <button
+            onClick={() => setView("dashboard")}
+            className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
+          >
+            🏠 Dashboard
+          </button>
+        </li>
+        <li>
+          <button
             onClick={() => setView("blogs")}
             className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
           >
@@ -48,14 +56,7 @@ const AdminSidebar = ({ setView }) => {
             💬 Yorum Yönetimi
           </button>
         </li>
-        <li>
-          <Link
-            to="/"
-            className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
-          >
-            🏠 Anasayfa
-          </Link>
-        </li>
+        
       </ul>
     </div>
   );

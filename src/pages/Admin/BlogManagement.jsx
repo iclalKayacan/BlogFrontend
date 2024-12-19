@@ -7,6 +7,7 @@ import UserManagement from "../../components/Admin/UserManagement";
 import CategoryManagement from "../../components/Admin/CategoryManagement";
 import TagManagement from "../../components/Admin/TagManagement";
 import CommentManagement from "../../components/Admin/CommentManagement";
+import AdminDashboard from "../../components/Admin/AdminDashboard";
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
@@ -38,7 +39,17 @@ const BlogManagement = () => {
       approved: true,
     },
   ]);
-
+  const [stats, setStats] = useState({
+    totalBlogs: 120,
+    totalUsers: 50,
+    totalCategories: 10,
+    totalTags: 15,
+    popularBlog: {
+      title: "React ile Modern Uygulamalar",
+      views: 3456,
+      likes: 567,
+    },
+  });
   const handleAddBlog = (newBlog) => {
     setBlogs([...blogs, { ...newBlog, id: Date.now() }]);
   };
@@ -112,7 +123,8 @@ const BlogManagement = () => {
     <div className="flex">
       <AdminSidebar setView={setView} />
       <div className="flex-1 p-4">
-        <h1 className="text-2xl font-bold mb-4">Admin Yönetim Paneli</h1>
+        {view === "dashboard" && <AdminDashboard stats={stats} />}
+
         {view === "blogs" && (
           <>
             {editingBlog ? (
