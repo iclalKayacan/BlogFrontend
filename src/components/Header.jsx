@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { FaSearch, FaRegUser, FaSun, FaMoon, FaPenNib } from "react-icons/fa";
 import { ThemeContext } from "../contexts/ThemeContext";
+import { Link } from "react-router-dom";
+import LoginRegisterModal from "./LoginRegisterModal"; // Yeni Modal Bileşeni
 
 const Header = () => {
   const { darkMode, toggleDarkMode } = useContext(ThemeContext);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state'i
 
   useEffect(() => {
     if (darkMode) {
@@ -13,45 +16,48 @@ const Header = () => {
     }
   }, [darkMode]);
 
+  const toggleModal = () => {
+    setIsModalOpen((prev) => !prev);
+  };
+
   return (
-    <header className="bg-backgroundLight dark:bg-backgroundDark shadow-md ">
+    <header className="bg-backgroundLight dark:bg-backgroundDark shadow-md">
       <div className="container mx-auto px-8 py-6 flex justify-between items-center">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
+        <Link to="/" className="flex items-center space-x-2">
           <FaPenNib className="text-3xl text-primary" />
           <h1 className="text-2xl font-bold text-textDark dark:text-textLight">
             Blog System
           </h1>
-        </div>
+        </Link>
 
         {/* Navigation Links */}
         <nav>
-          <ul className="flex space-x-6 text-base text-textDark dark:text-textLight ">
+          <ul className="flex space-x-6 text-base text-textDark dark:text-textLight">
             <li>
-              <a href="/" className="hover:text-primary">
+              <Link to="/" className="hover:text-primary">
                 Ana Sayfa
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/blogs" className="hover:text-primary">
+              <Link to="/blogs" className="hover:text-primary">
                 Bloglar
-              </a>
+              </Link>
             </li>
-
             <li>
-              <a href="/about" className="hover:text-primary">
+              <Link to="/about" className="hover:text-primary">
                 Hakkımızda
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/authors" className="hover:text-primary">
+              <Link to="/authors" className="hover:text-primary">
                 Yazarlar
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/contact" className="hover:text-primary">
+              <Link to="/contact" className="hover:text-primary">
                 İletişim
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -69,22 +75,21 @@ const Header = () => {
           </div>
 
           {/* Create Blog */}
-          <a
-            href="/create"
+          <Link
+            to="/create"
             className="bg-primary hover:bg-secondary text-white text-base px-5 py-3 rounded-full text-sm flex items-center space-x-2"
           >
             <FaPenNib />
             <span>Blog Oluştur</span>
-          </a>
+          </Link>
 
           {/* Profile */}
-          <a
-            href="/profile"
+          <button
+            onClick={toggleModal}
             className="bg-backgroundGray text-gray-800 p-3 rounded-full flex items-center space-x-2"
-            onClick={() => console.log("Profile icon clicked")}
           >
             <FaRegUser className="text-lg" />
-          </a>
+          </button>
 
           {/* Dark/Light Mode */}
           <button
@@ -100,6 +105,9 @@ const Header = () => {
           </button>
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && <LoginRegisterModal onClose={toggleModal} />}
     </header>
   );
 };

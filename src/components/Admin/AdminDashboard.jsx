@@ -3,7 +3,9 @@ import React from "react";
 const AdminDashboard = ({ stats }) => {
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-textDark mb-6">Dashboard</h2>
+      <h2 className="text-2xl font-bold text-textDark dark:text-textLight mb-6">
+        Dashboard
+      </h2>
 
       {/* İstatistik Kartları */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -36,7 +38,9 @@ const AdminDashboard = ({ stats }) => {
 
       {/* Ekstra Bilgiler */}
       <div className="mt-6">
-        <h3 className="text-xl font-bold text-textDark mb-4">Popüler Blog</h3>
+        <h3 className="text-xl font-bold text-textDark dark:text-textLight mb-4">
+          Popüler Blog
+        </h3>
         <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition">
           <h4 className="text-lg font-bold text-primary">
             {stats.popularBlog.title}
