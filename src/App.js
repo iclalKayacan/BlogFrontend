@@ -7,11 +7,13 @@ import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import BlogCard from "./components/BlogCard";
 import BlogDetails from "./pages/BlogDetails";
-import AdminPanel from "./pages/AdminPanel";
-import AdminBlogManagement from "./pages/AdminBlogManagement";
-import AdminBlogFormPage from "./pages/AdminBlogFormPage";
+import BlogManagement from "./pages/Admin/BlogManagement";
 
 function App() {
+  const handleDelete = (id) => {
+    console.log(`Blog ID ${id} silindi.`);
+  };
+
   const blogs = [
     {
       id: 1,
@@ -35,6 +37,7 @@ function App() {
       category: "Eğitim",
     },
   ];
+
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
@@ -42,11 +45,10 @@ function App() {
 
         <main className="flex-grow">
           <Routes>
+            {/* Ana Sayfa */}
             <Route path="/" element={<Home />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/admin/blogs" element={<AdminBlogManagement />} />
-            <Route path="/admin/blogs/new" element={<AdminBlogFormPage />} />
-            <Route path="/admin/blogs/:id" element={<AdminBlogFormPage />} />
+
+            {/* Blog Kartları */}
             <Route
               path="/"
               element={
@@ -57,9 +59,15 @@ function App() {
                 </div>
               }
             />
+
+            {/* Blog Detay Sayfası */}
             <Route path="/blogs/:id" element={<BlogDetails />} />
 
+            {/* Blog Listesi */}
             <Route path="/blogs" element={<BlogList />} />
+
+            {/* Admin Paneli */}
+            <Route path="/admin/blogs" element={<BlogManagement />} />
           </Routes>
         </main>
 
