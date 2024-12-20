@@ -70,18 +70,25 @@ const BlogDetails = () => {
 
         {/* Sağ: Yazar Bilgisi */}
         <aside className="md:w-1/3">
-          <div className="dark:bg-gray-800 p-6 text-center rounded-lg shadow-md">
+          <div className="dark:bg-gray-800 bg-white p-6 text-center rounded-lg shadow-md">
+            {/* Yazar Fotoğrafı */}
             <img
               src={blog.authorImage}
               alt={blog.author}
-              className="w-24 h-24 rounded-full mx-auto mb-4"
+              className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-secondary"
             />
-            <h3 className="text-xl font-semibold text-textDark dark:text-textLight">
+            {/* Yazar Adı */}
+            <h3 className="text-xl font-semibold text-textDark dark:text-textLight mb-2">
               {blog.author}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            {/* Yazar Açıklaması */}
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               {blog.aboutAuthor}
             </p>
+            {/* Bio Button */}
+            <button className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondaryDark transition duration-200">
+              Read my bio
+            </button>
           </div>
         </aside>
       </div>

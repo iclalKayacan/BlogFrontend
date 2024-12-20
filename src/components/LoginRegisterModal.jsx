@@ -1,76 +1,110 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { login, register } from "../store/authSlice";
 
 const LoginRegisterModal = ({ onClose }) => {
-  const [isLogin, setIsLogin] = useState(true); // Login/Register modunu kontrol eder
+  const dispatch = useDispatch();
+  const { isLoading, error, token } = useSelector((state) => state.auth); // Redux'tan token'ı alıyoruz
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    fullName: "", // Sadece kayıt için gerekli
+  });
+  const [successMessage, setSuccessMessage] = useState(""); // Başarı mesajı için state
 
   const toggleForm = () => {
-    setIsLogin((prev) => !prev); // Login ve Register arasında geçiş yapar
+    setIsLogin((prev) => !prev);
+    setFormData({ username: "", password: "", fullName: "" });
+    setSuccessMessage(""); // Form değiştirildiğinde başarı mesajını sıfırla
   };
 
-  const handleModalClick = (e) => {
-    e.stopPropagation(); // Modalın içi tıklanırsa olay dışarıya taşmasın
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isLogin) {
+      const resultAction = await dispatch(
+        login({ username: formData.username, password: formData.password })
+      );
+
+      if (resultAction.type === "auth/login/fulfilled") {
+        // Giriş başarılı
+        setSuccessMessage("Giriş başarılı!"); // Başarı mesajını güncelle
+      }
+    } else {
+      const resultAction = await dispatch(register(formData));
+
+      if (resultAction.type === "auth/register/fulfilled") {
+        // Kayıt başarılı
+        setSuccessMessage("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");
+      }
+    }
   };
 
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-      onClick={onClose} // Modal dışında bir yere tıklanırsa kapat
+      onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 w-full max-w-md"
-        onClick={handleModalClick} // Modalın içi tıklanırsa kapatmayı engelle
+        className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Form Başlığı */}
-        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+        <h2 className="text-2xl font-bold mb-4">
           {isLogin ? "Giriş Yap" : "Kayıt Ol"}
         </h2>
-
-        {/* Form */}
-        <form className="space-y-4">
+        {/* Hata mesajı */}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {/* Başarı mesajı */}
+        {successMessage && (
+          <p className="text-green-500 text-center mb-4">{successMessage}</p>
+        )}
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {!isLogin && (
             <input
               type="text"
+              name="fullName"
               placeholder="Ad Soyad"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border rounded-md"
             />
           )}
           <input
-            type="email"
-            placeholder="E-posta"
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary"
+            type="text"
+            name="username"
+            placeholder="Kullanıcı Adı"
+            value={formData.username}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 border rounded-md"
           />
           <input
             type="password"
+            name="password"
             placeholder="Şifre"
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary"
+            value={formData.password}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 border rounded-md"
           />
           <button
             type="submit"
-            className="w-full bg-primary text-white py-2 rounded-md hover:bg-secondary"
+            className="w-full bg-primary text-white py-2 rounded-md"
+            disabled={isLoading}
           >
-            {isLogin ? "Giriş Yap" : "Kayıt Ol"}
+            {isLoading
+              ? "Lütfen Bekleyin..."
+              : isLogin
+              ? "Giriş Yap"
+              : "Kayıt Ol"}
           </button>
         </form>
-
-        {/* Alternatif Giriş Yöntemleri (Sadece Giriş Yap İçin) */}
-        {isLogin && (
-          <div className="mt-6">
-            <p className="text-center text-gray-600 dark:text-gray-400">veya</p>
-            <button className="w-full mt-4 flex items-center justify-center space-x-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="w-5 h-5"
-              />
-              <span>Google ile Giriş Yap</span>
-            </button>
-          </div>
-        )}
-
-        {/* Alt Mesaj ve Geçiş Linki */}
         <div className="mt-4 text-center">
           {isLogin ? (
-            <p className="text-gray-600 dark:text-gray-400">
+            <p>
               Henüz kayıt olmadınız mı?{" "}
               <button
                 onClick={toggleForm}
@@ -80,7 +114,7 @@ const LoginRegisterModal = ({ onClose }) => {
               </button>
             </p>
           ) : (
-            <p className="text-gray-600 dark:text-gray-400">
+            <p>
               Zaten bir hesabınız var mı?{" "}
               <button
                 onClick={toggleForm}

@@ -4,13 +4,10 @@ import { fetchCategories } from "../store/categoriesSlice";
 
 const CategoryList = ({ selectedCategory, onSelectCategory }) => {
   const dispatch = useDispatch();
-
-  // Redux'tan kategorileri ve durumunu çekiyoruz
   const { categories, status, error } = useSelector(
     (state) => state.categories
   );
 
-  // Kategorileri API'den çek
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchCategories());
@@ -27,7 +24,6 @@ const CategoryList = ({ selectedCategory, onSelectCategory }) => {
 
   return (
     <ul className="space-y-2">
-      {/* "Tümü" Seçeneği */}
       <li>
         <button
           onClick={() => onSelectCategory("Tümü")}
@@ -40,12 +36,10 @@ const CategoryList = ({ selectedCategory, onSelectCategory }) => {
           Tümü
         </button>
       </li>
-
-      {/* Dinamik Kategoriler */}
       {categories.map((category) => (
         <li key={category.id}>
           <button
-            onClick={() => onSelectCategory(category.id)} // category.id gönderiliyor
+            onClick={() => onSelectCategory(category.id)}
             className={`w-full text-left px-4 py-2 rounded ${
               selectedCategory === category.id
                 ? "bg-primary text-white"

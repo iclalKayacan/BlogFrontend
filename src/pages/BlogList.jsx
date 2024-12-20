@@ -14,6 +14,7 @@ const BlogList = () => {
 
   const { status: categoryStatus } = useSelector((state) => state.categories);
 
+  // Blogları API'den alma
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true);
@@ -30,15 +31,24 @@ const BlogList = () => {
     fetchBlogs();
   }, []);
 
+  // Filtreleme işlemi
   const filteredBlogs =
     selectedCategory === "Tümü"
       ? blogs
       : blogs.filter((blog) =>
-          blog.categories.some((category) => category.id === selectedCategory)
+          blog.categories.some(
+            (category) => String(category.id) === String(selectedCategory)
+          )
         );
 
   const totalBlogs = filteredBlogs.length;
 
+  // Debugging için konsola yazdırma (Bu kısım!)
+  console.log("Bloglar:", blogs);
+  console.log("Seçilen Kategori:", selectedCategory);
+  console.log("Filtrelenmiş Bloglar:", filteredBlogs);
+
+  // Filtrelenmiş blogları sayfalamaya göre ayarlama
   useEffect(() => {
     setLoading(true);
     const initialBlogs = filteredBlogs.slice(0, blogsPerPage);
@@ -49,6 +59,7 @@ const BlogList = () => {
     setCurrentPage(1);
   }, [filteredBlogs]);
 
+  // Daha fazla blog yükleme
   const loadMoreBlogs = () => {
     if (displayedBlogs.length >= totalBlogs) return;
 
@@ -58,6 +69,7 @@ const BlogList = () => {
     setCurrentPage(nextPage);
   };
 
+  // Scroll olayını yakalama
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -78,7 +90,6 @@ const BlogList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 flex max-w-7xl">
-      {/* Kategoriler */}
       <div className="w-1/4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
           Kategoriler
@@ -88,8 +99,6 @@ const BlogList = () => {
           onSelectCategory={setSelectedCategory}
         />
       </div>
-
-      {/* Blog Kartları */}
       <div className="w-3/4 ml-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
