@@ -1,30 +1,33 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axios";
 
-// API'den blogları çek
-export const fetchBlogs = createAsyncThunk("blogs/fetchBlogs", async () => {
-  const response = await axiosInstance.get("/Blogs");
-  return response.data; // Blog verisi döndürülüyor
-});
+// Blogları API'den çekmek için async thunk
+export const fetchBlogById = createAsyncThunk(
+  "blogs/fetchBlogById",
+  async (id) => {
+    const response = await axiosInstance.get(`/Blogs/${id}`);
+    return response.data;
+  }
+);
 
 const blogsSlice = createSlice({
   name: "blogs",
   initialState: {
-    blogs: [],
+    blog: null,
     status: "idle",
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchBlogs.pending, (state) => {
+      .addCase(fetchBlogById.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchBlogs.fulfilled, (state, action) => {
+      .addCase(fetchBlogById.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.blogs = action.payload;
+        state.blog = action.payload;
       })
-      .addCase(fetchBlogs.rejected, (state, action) => {
+      .addCase(fetchBlogById.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

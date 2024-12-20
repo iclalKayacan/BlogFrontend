@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import CategoryBadge from "./CategoryBadge"; // CategoryBadge bileşenini import ediyoruz
 
 const BlogCard = ({ blog }) => {
   return (
@@ -18,20 +19,11 @@ const BlogCard = ({ blog }) => {
         {blog.categories && (
           <div className="mb-2 flex flex-wrap gap-2">
             {blog.categories.map((category, index) => (
-              <span
+              <CategoryBadge
                 key={index}
-                className={`px-2 py-1 rounded-full text-sm font-semibold text-white ${
-                  category.name === "React"
-                    ? "bg-blue-500"
-                    : category.name === "JavaScript"
-                    ? "bg-yellow-500"
-                    : category.name === "CSS"
-                    ? "bg-blue-300"
-                    : "bg-gray-500"
-                }`}
-              >
-                {category.name}
-              </span>
+                category={category.name}
+                color={category.color} // Renk özelliğini burada geçiriyoruz
+              />
             ))}
           </div>
         )}

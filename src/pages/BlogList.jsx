@@ -34,7 +34,7 @@ const BlogList = () => {
     selectedCategory === "Tümü"
       ? blogs
       : blogs.filter((blog) =>
-          blog.categories.some((category) => category.name === selectedCategory)
+          blog.categories.some((category) => category.id === selectedCategory)
         );
 
   const totalBlogs = filteredBlogs.length;

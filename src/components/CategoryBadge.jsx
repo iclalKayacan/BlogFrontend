@@ -1,16 +1,7 @@
 import React from "react";
 
-const categoryColors = {
-  React: "bg-blue-500",
-  JavaScript: "bg-yellow-500",
-  CSS: "bg-purple-500",
-  Teknoloji: "bg-red-500",
-  Sağlık: "bg-green-500",
-  "Yemek Tarifleri": "bg-orange-500",
-};
-
-const CategoryBadge = ({ category }) => {
-  const colorClass = categoryColors[category] || "bg-gray-500";
+const CategoryBadge = ({ category, color }) => {
+  const colorClass = color || "bg-gray-500"; // Varsayılan renk
 
   return (
     <span
