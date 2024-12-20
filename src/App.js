@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Provider } from "react-redux"; // Redux Provider'ı ekliyoruz
+import store from "./store/store"; // Redux Store'u import ediyoruz
 import Header from "./components/Header";
 import BlogList from "./pages/BlogList";
 import Home from "./pages/Home";
@@ -9,6 +11,7 @@ import BlogCard from "./components/BlogCard";
 import BlogDetails from "./pages/BlogDetails";
 import BlogManagement from "./pages/Admin/BlogManagement";
 import ThemeProvider from "./contexts/ThemeContext";
+import BlogsReduxTestPage from "./pages/BlogsReduxTestPage";
 
 function App() {
   const handleDelete = (id) => {
@@ -40,45 +43,52 @@ function App() {
   ];
 
   return (
-    <ThemeProvider>
-      <Router>
-        <div className="flex flex-col min-h-screen">
-          <Header />
+    <Provider store={store}>
+      {" "}
+      {/* Redux Provider'ı ekledik */}
+      <ThemeProvider>
+        <Router>
+          <div className="flex flex-col min-h-screen">
+            <Header />
 
-          <main className="flex-grow">
-            <Routes>
-              {/* Ana Sayfa */}
-              <Route path="/" element={<Home />} />
+            <main className="flex-grow">
+              <Routes>
+                {/* Ana Sayfa */}
+                <Route path="/" element={<Home />} />
 
-              {/* Blog Kartları */}
-              <Route
-                path="/"
-                element={
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {blogs.map((blog) => (
-                      <BlogCard key={blog.id} blog={blog} />
-                    ))}
-                  </div>
-                }
-              />
+                {/* Redux Test Sayfası */}
+                <Route path="/redux-test" element={<BlogsReduxTestPage />} />
 
-              {/* Blog Detay Sayfası */}
-              <Route path="/blogs/:id" element={<BlogDetails />} />
+                {/* Blog Kartları */}
+                <Route
+                  path="/"
+                  element={
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {blogs.map((blog) => (
+                        <BlogCard key={blog.id} blog={blog} />
+                      ))}
+                    </div>
+                  }
+                />
 
-              {/* Blog Listesi */}
-              <Route path="/blogs" element={<BlogList />} />
+                {/* Blog Detay Sayfası */}
+                <Route path="/blogs/:id" element={<BlogDetails />} />
 
-              {/* Admin Paneli */}
-              <Route path="/admin/blogs" element={<BlogManagement />} />
-            </Routes>
-          </main>
+                {/* Blog Listesi */}
+                <Route path="/blogs" element={<BlogList />} />
 
-          <Footer />
+                {/* Admin Paneli */}
+                <Route path="/admin/blogs" element={<BlogManagement />} />
+              </Routes>
+            </main>
 
-          <ScrollToTop />
-        </div>
-      </Router>
-    </ThemeProvider>
+            <Footer />
+
+            <ScrollToTop />
+          </div>
+        </Router>
+      </ThemeProvider>
+    </Provider>
   );
 }
 
