@@ -1,16 +1,16 @@
 import React from "react";
 
 const categoryColors = {
-  React: "bg-categories-react",
-  JavaScript: "bg-categories-javascript",
-  CSS: "bg-categories-css",
-  Teknoloji: "bg-categories-teknoloji",
-  Sağlık: "bg-categories-sağlık",
-  "Yemek Tarifleri": "bg-categories-yemek",
+  React: "bg-blue-500",
+  JavaScript: "bg-yellow-500",
+  CSS: "bg-purple-500",
+  Teknoloji: "bg-red-500",
+  Sağlık: "bg-green-500",
+  "Yemek Tarifleri": "bg-orange-500",
 };
 
 const CategoryBadge = ({ category }) => {
-  const colorClass = categoryColors[category] || "bg-categories-default";
+  const colorClass = categoryColors[category] || "bg-gray-500";
 
   return (
     <span

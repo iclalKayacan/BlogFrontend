@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../api/axios";
 
-// API'den blogları getiren thunk
+// API'den blogları çek
 export const fetchBlogs = createAsyncThunk("blogs/fetchBlogs", async () => {
-  const response = await axios.get("http://localhost:7079");
-  return response.data;
+  const response = await axiosInstance.get("/Blogs");
+  return response.data; // Blog verisi döndürülüyor
 });
 
-const blogSlice = createSlice({
+const blogsSlice = createSlice({
   name: "blogs",
   initialState: {
     blogs: [],
@@ -31,4 +31,4 @@ const blogSlice = createSlice({
   },
 });
 
-export default blogSlice.reducer;
+export default blogsSlice.reducer;
