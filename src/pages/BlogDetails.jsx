@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBlogById } from "../store/blogsSlice";
 import Comments from "../components/Comments";
+import CategoryBadge from "../components/CategoryBadge"; // CategoryBadge bileşeni import edildi
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -40,9 +41,15 @@ const BlogDetails = () => {
           className="w-full h-[450px] md:h-[600px] object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-center">
-          <span className="text-xs md:text-sm px-3 py-1 bg-secondary text-white rounded-full mb-4">
-            {blog.categories.map((cat) => cat.name).join(", ")}
-          </span>
+          <div className="mb-4 flex flex-wrap gap-2 justify-center">
+            {blog.categories.map((category, index) => (
+              <CategoryBadge
+                key={index}
+                category={category.name}
+                color={category.color || "bg-gray-500"} // Renk özelliği
+              />
+            ))}
+          </div>
           <h1 className="text-3xl md:text-5xl font-bold text-white px-4 mb-4">
             {blog.title}
           </h1>
@@ -50,7 +57,23 @@ const BlogDetails = () => {
             <p>
               By <span className="font-semibold">{blog.author}</span>
             </p>
-            <p>{blog.date}</p>
+            <p className="flex items-center space-x-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-4 h-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 6v6l4 2M12 4a8 8 0 100 16 8 8 0 000-16z"
+                />
+              </svg>
+              <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+            </p>
             <p>{blog.readTime}</p>
           </div>
         </div>

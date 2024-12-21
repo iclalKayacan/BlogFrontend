@@ -25,7 +25,7 @@ const AdminBlogEdit = ({ blog, onUpdate }) => {
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+        className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary text-textDark"
         placeholder="Başlık"
       />
 
@@ -34,7 +34,7 @@ const AdminBlogEdit = ({ blog, onUpdate }) => {
         <ReactQuill
           value={content}
           onChange={setContent}
-          style={{ height: "200px" }}
+          style={{ height: "200px", color: "#333" }} // Metin rengini koyulaştır
           className="rounded-lg"
         />
       </div>
@@ -43,11 +43,21 @@ const AdminBlogEdit = ({ blog, onUpdate }) => {
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value)}
-        className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+        className="border border-inputGray p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary text-textDark"
         style={{ marginTop: "40px" }}
       >
-        <option value="taslak">Taslak</option>
-        <option value="yayınlanmış">Yayınlanmış</option>
+        <option
+          value="taslak"
+          style={{ color: "#9ca3af" }} // Açık gri yazı rengi
+        >
+          Taslak
+        </option>
+        <option
+          value="yayınlanmış"
+          style={{ color: "#10b981" }} // Yeşil yazı rengi
+        >
+          Yayınlanmış
+        </option>
       </select>
 
       {/* Güncelle Butonu */}

@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import CategoryBadge from "./CategoryBadge"; // CategoryBadge bileşenini import ediyoruz
+import CategoryBadge from "./CategoryBadge";
 
 const BlogCard = ({ blog }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden h-full flex flex-col">
       {/* Blog Görseli */}
       <div className="w-full h-48 bg-gray-300">
         <img
@@ -14,7 +14,8 @@ const BlogCard = ({ blog }) => {
         />
       </div>
 
-      <div className="p-4">
+      {/* Kart İçeriği */}
+      <div className="p-4 flex flex-col flex-1">
         {/* Kategori Badge */}
         {blog.categories && (
           <div className="mb-2 flex flex-wrap gap-2">
@@ -22,7 +23,7 @@ const BlogCard = ({ blog }) => {
               <CategoryBadge
                 key={index}
                 category={category.name}
-                color={category.color} // Renk özelliğini burada geçiriyoruz
+                color={category.color} // Renk özelliği
               />
             ))}
           </div>
@@ -34,17 +35,19 @@ const BlogCard = ({ blog }) => {
         </h2>
 
         {/* Blog Özeti */}
-        <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm">
+        <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm flex-1">
           {blog.summary}
         </p>
 
         {/* Devamını Oku Linki */}
-        <Link
-          to={`/blogs/${blog.id}`}
-          className="text-primary hover:underline mt-4 inline-block"
-        >
-          Devamını Oku
-        </Link>
+        <div className="mt-auto pt-4">
+          <Link
+            to={`/blogs/${blog.id}`}
+            className="text-primary hover:underline inline-block"
+          >
+            Devamını Oku
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,12 +1,17 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { FaSearch, FaRegUser, FaSun, FaMoon, FaPenNib } from "react-icons/fa";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { Link } from "react-router-dom";
-import LoginRegisterModal from "./LoginRegisterModal"; // Yeni Modal Bileşeni
+import { useSelector } from "react-redux";
+import LoginRegisterModal from "./LoginRegisterModal";
 
 const Header = () => {
   const { darkMode, toggleDarkMode } = useContext(ThemeContext);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state'i
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const { user } = useSelector((state) => state.auth); // Redux'tan user bilgisi
+
+  const profileMenuRef = useRef(null);
 
   useEffect(() => {
     if (darkMode) {
@@ -16,8 +21,28 @@ const Header = () => {
     }
   }, [darkMode]);
 
+  // Menü dışında tıklamaları yakalama
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen((prev) => !prev);
   };
 
   return (
@@ -84,12 +109,47 @@ const Header = () => {
           </Link>
 
           {/* Profile */}
-          <button
-            onClick={toggleModal}
-            className="bg-backgroundGray text-gray-800 p-3 rounded-full flex items-center space-x-2"
-          >
-            <FaRegUser className="text-lg" />
-          </button>
+          <div className="relative" ref={profileMenuRef}>
+            <button
+              onClick={toggleProfileMenu}
+              className="bg-backgroundGray text-gray-800 p-3 rounded-full flex items-center"
+            >
+              <FaRegUser className="text-lg" />
+            </button>
+            {isProfileMenuOpen && (
+              <div className="absolute right-0 mt-2 bg-white shadow-md rounded-md w-48 z-10">
+                <ul>
+                  {/* Admin Panel */}
+                  {user?.role?.toLowerCase() === "admin" && (
+                    <li>
+                      <Link
+                        to="/admin/blogs"
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      >
+                        Admin Panel
+                      </Link>
+                    </li>
+                  )}
+
+                  {/* Kullanıcı Adı */}
+                  <li>
+                    <span className="block px-4 py-2 text-gray-800">
+                      {user?.username || "Misafir"}
+                    </span>
+                  </li>
+                  {/* Giriş Yap/Kayıt Ol */}
+                  <li>
+                    <button
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      onClick={toggleModal}
+                    >
+                      Giriş Yap/Kayıt Ol
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
 
           {/* Dark/Light Mode */}
           <button

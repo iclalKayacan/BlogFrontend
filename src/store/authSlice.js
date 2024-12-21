@@ -10,12 +10,12 @@ export const login = createAsyncThunk(
         "https://localhost:7079/api/Auth/login",
         credentials
       );
-      console.log("Response from backend:", response.data); // Backend'den dönen yanıt
+      // Token ve kullanıcı bilgisi döner
       return response.data;
     } catch (error) {
-      console.error("Login error:", error.response?.data || error.message); // Hata logu
+      console.error("Login error:", error.response?.data || error.message);
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Giriş yapılamadı!"
+        error.response?.data?.message || "Login failed!"
       );
     }
   }
@@ -32,8 +32,9 @@ export const register = createAsyncThunk(
       );
       return response.data; // Başarı mesajı döner
     } catch (error) {
+      console.error("Register error:", error.response?.data || error.message);
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Kayıt yapılamadı!"
+        error.response?.data?.message || "Registration failed!"
       );
     }
   }
@@ -42,15 +43,18 @@ export const register = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null, // Giriş yapmış kullanıcı bilgisi
-    token: null, // JWT token
-    isLoading: false, // Async işlemler için durum
-    error: null, // Hata mesajı
+    user: null,
+    token: null,
+    isLoading: false,
+    error: null,
+    isAdmin: false, // Admin kontrolü için
   },
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.isAdmin = false;
+      localStorage.removeItem("authToken"); // Token silme
     },
   },
   extraReducers: (builder) => {
@@ -62,12 +66,18 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.token = action.payload.Token; // Backend'den dönen JWT
-        state.user = action.payload.User; // Kullanıcı bilgisi
+        state.token = action.payload.token || null;
+        state.user = action.payload.user || null;
+        state.isAdmin = action.payload.user?.role === "admin";
+
+        // Token'ı localStorage'a kaydet
+        if (action.payload.token) {
+          localStorage.setItem("authToken", action.payload.token);
+        }
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload; // Hata mesajı
+        state.error = action.payload;
       })
       // Register işlemi
       .addCase(register.pending, (state) => {

@@ -14,10 +14,6 @@ import ThemeProvider from "./contexts/ThemeContext";
 import BlogsReduxTestPage from "./pages/BlogsReduxTestPage";
 
 function App() {
-  const handleDelete = (id) => {
-    console.log(`Blog ID ${id} silindi.`);
-  };
-
   const blogs = [
     {
       id: 1,
@@ -44,8 +40,6 @@ function App() {
 
   return (
     <Provider store={store}>
-      {" "}
-      {/* Redux Provider'ı ekledik */}
       <ThemeProvider>
         <Router>
           <div className="flex flex-col min-h-screen">
