@@ -6,8 +6,9 @@ const BlogCard = ({ blog }) => {
   // Kategorileri işle
   let categories = [];
 
-  if (blog.categories && blog.categories.$values) {
-    categories = blog.categories.$values;
+  // Eğer blog.categories bir dizi ise direkt ata, eğer `$values` varsa içinden al
+  if (blog.categories) {
+    categories = blog.categories.$values || blog.categories;
   }
 
   return (

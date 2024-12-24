@@ -1,82 +1,59 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_BASE_URL = "https://localhost:7079/api";
+const API_URL = "https://localhost:7079/api";
 
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
-  async () => {
-    const response = await axios.get(`${API_BASE_URL}/Category`);
-    return response.data;
-  }
-);
-
-export const fetchBlogsByCategory = createAsyncThunk(
-  "categories/fetchBlogsByCategory",
-  async (categoryId) => {
-    const response = await axios.get(
-      `https://localhost:7079/api/Category/${categoryId}/blogs`
-    );
-    return response.data; // API'den dönen blogları döndür
-  }
-);
-
-export const fetchCategoryById = createAsyncThunk(
-  "categories/fetchCategoryById",
-  async (categoryId) => {
-    const response = await axios.get(`${API_BASE_URL}/Category/${categoryId}`);
-    return response.data;
+  async (_, { rejectWithValue }) => {
+    try {
+      console.log("Kategoriler yükleniyor...");
+      const response = await axios.get(`${API_URL}/Category`);
+      console.log("Kategoriler response:", response.data);
+      // API'den gelen veriyi düzenleme
+      const categories = response.data.$values || response.data;
+      return Array.isArray(categories) ? categories : [];
+    } catch (error) {
+      console.error("Kategori yükleme hatası:", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Kategoriler yüklenemedi"
+      );
+    }
   }
 );
 
 const categoriesSlice = createSlice({
   name: "categories",
   initialState: {
-    categories: [], // Kategoriler
-    blogsByCategory: [], // Seçilen kategoriye ait bloglar
-    currentCategory: null, // Yeni eklenen state
-
-    status: "idle",
+    items: [],
+    status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
+    selectedCategory: null,
   },
-  reducers: {},
+  reducers: {
+    setSelectedCategory: (state, action) => {
+      state.selectedCategory = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCategories.pending, (state) => {
         state.status = "loading";
+        state.error = null;
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.categories = action.payload;
+        state.items = action.payload;
+        state.error = null;
+        console.log("Kategoriler state'e yüklendi:", state.items);
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message;
-      })
-      .addCase(fetchCategoryById.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchCategoryById.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.currentCategory = action.payload;
-      })
-      .addCase(fetchCategoryById.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      })
-      // Yeni thunk için extraReducers
-      .addCase(fetchBlogsByCategory.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchBlogsByCategory.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.blogsByCategory = action.payload; // Gelen blogları sakla
-      })
-      .addCase(fetchBlogsByCategory.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.payload;
+        console.error("Kategori yükleme hatası state:", action.payload);
       });
   },
 });
 
+export const { setSelectedCategory } = categoriesSlice.actions;
 export default categoriesSlice.reducer;

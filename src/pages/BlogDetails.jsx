@@ -15,33 +15,37 @@ const BlogDetails = () => {
     error,
   } = useSelector((state) => state.blogs);
 
+  // Blog'u fetch et
   useEffect(() => {
     if (id) {
       dispatch(fetchBlogById(id));
     }
   }, [dispatch, id]);
 
+  // Yükleme durumu
   if (status === "loading") {
     return <p>Yükleniyor...</p>;
   }
 
+  // Hata durumu
   if (status === "failed") {
     return <p>Hata: {error}</p>;
   }
 
+  // Blog bulunamama durumu
   if (!blog) {
     return <p>Blog bulunamadı!</p>;
   }
 
   // Kategorileri işle
-  const categories = blog.categories?.$values || [];
+  const categories = blog.categories?.$values || blog.categories || [];
 
   return (
     <div className="bg-backgroundLight dark:bg-backgroundDark">
       {/* Üst Görsel */}
       <div className="relative w-full">
         <img
-          src={blog.image}
+          src={blog.image || "https://via.placeholder.com/1200x600"}
           alt={blog.title}
           className="w-full h-[450px] md:h-[600px] object-cover"
         />
@@ -64,7 +68,8 @@ const BlogDetails = () => {
           </h1>
           <div className="text-gray-300 text-sm flex space-x-4">
             <p>
-              By <span className="font-semibold">{blog.author}</span>
+              By{" "}
+              <span className="font-semibold">{blog.author || "Unknown"}</span>
             </p>
             <p className="flex items-center space-x-1">
               <svg
@@ -81,9 +86,13 @@ const BlogDetails = () => {
                   d="M12 6v6l4 2M12 4a8 8 0 100 16 8 8 0 000-16z"
                 />
               </svg>
-              <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+              <span>
+                {blog.createdAt
+                  ? new Date(blog.createdAt).toLocaleDateString()
+                  : "Tarih yok"}
+              </span>
             </p>
-            <p>{blog.readTime}</p>
+            <p>{blog.readTime || "Okuma süresi yok"}</p>
           </div>
         </div>
       </div>
@@ -92,26 +101,28 @@ const BlogDetails = () => {
       <div className="max-w-screen-lg mx-auto flex flex-col md:flex-row gap-8 py-8 px-4">
         {/* Sol: Blog İçeriği */}
         <article className="md:w-2/3 leading-relaxed text-gray-700 dark:text-textLight">
-          {blog.content.split("\n").map((paragraph, index) => (
-            <React.Fragment key={index}>
-              <p className="mb-4">{paragraph}</p>
-            </React.Fragment>
-          ))}
+          {blog.content
+            ? blog.content.split("\n").map((paragraph, index) => (
+                <React.Fragment key={index}>
+                  <p className="mb-4">{paragraph}</p>
+                </React.Fragment>
+              ))
+            : "İçerik bulunamadı."}
         </article>
 
         {/* Sağ: Yazar Bilgisi */}
         <aside className="md:w-1/3">
           <div className="dark:bg-gray-800 bg-white p-6 text-center rounded-lg shadow-md">
             <img
-              src={blog.authorImage}
-              alt={blog.author}
+              src={blog.authorImage || "https://via.placeholder.com/150"}
+              alt={blog.author || "Yazar"}
               className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-secondary"
             />
             <h3 className="text-xl font-semibold text-textDark dark:text-textLight mb-2">
-              {blog.author}
+              {blog.author || "Yazar Bilgisi Yok"}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              {blog.aboutAuthor}
+              {blog.aboutAuthor || "Yazar hakkında bilgi bulunamadı."}
             </p>
             <button className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondaryDark transition duration-200">
               Read my bio
@@ -126,7 +137,7 @@ const BlogDetails = () => {
           Yorumlar
         </h2>
         <CommentForm blogId={parseInt(id)} />
-        <CommentList comments={blog?.comments || []} />
+        <CommentList comments={blog.comments || []} />
       </div>
     </div>
   );
