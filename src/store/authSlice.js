@@ -1,140 +1,129 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Async thunk for login
+const API_BASE_URL = "https://localhost:7079/api";
+
+// Kullanıcı bilgilerini localStorage'dan al
+const getStoredAuth = () => {
+  try {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+    return { token, user };
+  } catch (error) {
+    return { token: null, user: null };
+  }
+};
+
+// Login işlemi
 export const login = createAsyncThunk(
   "auth/login",
-  async (credentials, thunkAPI) => {
+  async (credentials, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "https://localhost:7079/api/Auth/login",
+        `${API_BASE_URL}/Auth/login`,
         credentials
       );
-      return response.data; // Token ve kullanıcı bilgisi döner
-    } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Login failed!"
-      );
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Giriş başarısız");
     }
   }
 );
 
-// Async thunk for register
+// Register işlemi
 export const register = createAsyncThunk(
   "auth/register",
-  async (userData, thunkAPI) => {
+  async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "https://localhost:7079/api/auth/register",
+        `${API_BASE_URL}/Auth/register`,
         userData
       );
-      return response.data; // Başarı mesajı döner
-    } catch (error) {
-      console.error("Register error:", error.response?.data || error.message);
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Registration failed!"
-      );
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Kayıt başarısız");
     }
   }
 );
 
-// Async thunk for fetching user details (rehydration)
-export const fetchUser = createAsyncThunk(
-  "auth/fetchUser",
-  async (_, thunkAPI) => {
-    const token = localStorage.getItem("authToken");
-    if (!token) return thunkAPI.rejectWithValue("No token found");
-
-    try {
-      const response = await axios.get("https://localhost:7079/api/Auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data; // Kullanıcı bilgileri döner
-    } catch (error) {
-      console.error("Fetch user error:", error.response?.data || error.message);
-      return thunkAPI.rejectWithValue("Failed to fetch user data");
-    }
-  }
-);
+const { token, user } = getStoredAuth();
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
-    token: localStorage.getItem("authToken") || null, // Başlangıçta token kontrolü
-    isLoading: false,
+    user: user,
+    token: token,
+    isAuthenticated: !!token,
+    status: "idle",
     error: null,
-    isAdmin: false,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
-      state.isAdmin = false;
-      localStorage.removeItem("authToken");
+      state.isAuthenticated = false;
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
-    initializeAuth: (state, action) => {
-      const storedToken = localStorage.getItem("authToken");
-      if (storedToken) {
-        state.token = storedToken;
-        // Token üzerinden kullanıcı bilgilerini ayarla
-        state.user = action.payload.user || null;
-        state.isAdmin = action.payload.user?.role === "admin";
-      }
+    loadAuth: (state) => {
+      const storedAuth = getStoredAuth();
+      state.user = storedAuth.user;
+      state.token = storedAuth.token;
+      state.isAuthenticated = !!storedAuth.token;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Login işlemi
       .addCase(login.pending, (state) => {
-        state.isLoading = true;
+        state.status = "loading";
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.token = action.payload.token || null;
-        state.user = action.payload.user || null;
-        state.isAdmin = action.payload.user?.role === "admin";
-
-        // Token'ı localStorage'a kaydet
-        if (action.payload.token) {
-          localStorage.setItem("authToken", action.payload.token);
-        }
-      })
-      .addCase(login.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      // Register işlemi
-      .addCase(register.pending, (state) => {
-        state.isLoading = true;
+        state.status = "succeeded";
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
         state.error = null;
       })
-      .addCase(register.fulfilled, (state) => {
-        state.isLoading = false;
+      .addCase(login.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(register.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+        state.error = null;
       })
       .addCase(register.rejected, (state, action) => {
-        state.isLoading = false;
+        state.status = "failed";
         state.error = action.payload;
-      })
-      // Fetch user işlemi (rehydration)
-      .addCase(fetchUser.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(fetchUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload;
-        state.isAdmin = action.payload.role === "admin";
-      })
-      .addCase(fetchUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-        state.token = null;
-        localStorage.removeItem("authToken"); // Token geçersizse sil
       });
   },
 });
 
-export const { logout, initializeAuth } = authSlice.actions;
+// Axios interceptor ekle
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export const { logout, loadAuth } = authSlice.actions;
 export default authSlice.reducer;

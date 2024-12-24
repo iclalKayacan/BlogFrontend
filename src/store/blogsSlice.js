@@ -44,13 +44,11 @@ export const fetchBlogs = createAsyncThunk(
 
 export const fetchBlogById = createAsyncThunk(
   "blogs/fetchBlogById",
-  async (blogId, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${API_URL}/${blogId}`);
-      return response.data; // tek blog nesnesi
-    } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
-    }
+  async (id) => {
+    const response = await axios.get(`${API_URL}/${id}`);
+    // API yanıtını console'a yazdırarak kontrol edelim
+    console.log("Blog API Response:", response.data);
+    return response.data;
   }
 );
 

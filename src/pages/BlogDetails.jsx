@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBlogById } from "../store/blogsSlice";
 import CategoryBadge from "../components/CategoryBadge";
+import CommentForm from "../components/CommentForm";
+import CommentList from "../components/CommentList";
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -13,12 +15,12 @@ const BlogDetails = () => {
     error,
   } = useSelector((state) => state.blogs);
 
-  // Blog verisini API'den çek
   useEffect(() => {
-    dispatch(fetchBlogById(id));
+    if (id) {
+      dispatch(fetchBlogById(id));
+    }
   }, [dispatch, id]);
 
-  // Yükleme ve hata durumları
   if (status === "loading") {
     return <p>Yükleniyor...</p>;
   }
@@ -31,7 +33,8 @@ const BlogDetails = () => {
     return <p>Blog bulunamadı!</p>;
   }
 
-  const categories = Array.isArray(blog.categories) ? blog.categories : [];
+  // Kategorileri işle
+  const categories = blog.categories?.$values || [];
 
   return (
     <div className="bg-backgroundLight dark:bg-backgroundDark">
@@ -43,17 +46,19 @@ const BlogDetails = () => {
           className="w-full h-[450px] md:h-[600px] object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-center">
-          <div className="mb-4 flex flex-wrap gap-2 justify-center">
-            {categories.length > 0 && (
-              <div className="bg-gray-100 dark:bg-gray-800 py-4">
-                <div className="max-w-screen-lg mx-auto px-4">
-                  <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
-                    Category: {categories[0].name || categories[0]}
-                  </h2>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Kategori Badges */}
+          {categories.length > 0 && (
+            <div className="mb-4 flex flex-wrap gap-2 justify-center">
+              {categories.map((category) => (
+                <CategoryBadge
+                  key={category.id}
+                  category={category.name}
+                  color={category.color}
+                />
+              ))}
+            </div>
+          )}
+
           <h1 className="text-3xl md:text-5xl font-bold text-white px-4 mb-4">
             {blog.title}
           </h1>
@@ -113,6 +118,15 @@ const BlogDetails = () => {
             </button>
           </div>
         </aside>
+      </div>
+
+      {/* Yorumlar Bölümü */}
+      <div className="max-w-screen-lg mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+          Yorumlar
+        </h2>
+        <CommentForm blogId={parseInt(id)} />
+        <CommentList comments={blog?.comments || []} />
       </div>
     </div>
   );

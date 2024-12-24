@@ -3,7 +3,8 @@ module.exports = {
     "bg-red-500",
     "bg-pink-500",
     "bg-blue-500",
-    "bg-gray-500, bg-orange-500",
+    "bg-gray-500", // Corrected this line
+    "bg-orange-500", // Corrected this line
   ],
   darkMode: "class",
   theme: {
