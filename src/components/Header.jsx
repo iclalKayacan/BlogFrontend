@@ -2,14 +2,16 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { FaSearch, FaRegUser, FaSun, FaMoon, FaPenNib } from "react-icons/fa";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../store/authSlice";
 import LoginRegisterModal from "./LoginRegisterModal";
 
 const Header = () => {
   const { darkMode, toggleDarkMode } = useContext(ThemeContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const { user } = useSelector((state) => state.auth); // Redux'tan user bilgisi
+  const { user, token } = useSelector((state) => state.auth); // Redux'tan user ve token bilgisi
+  const dispatch = useDispatch();
 
   const profileMenuRef = useRef(null);
 
@@ -43,6 +45,11 @@ const Header = () => {
 
   const toggleProfileMenu = () => {
     setIsProfileMenuOpen((prev) => !prev);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout()); // Redux logout işlemi
+    setIsProfileMenuOpen(false); // Menü kapat
   };
 
   return (
@@ -132,20 +139,32 @@ const Header = () => {
                   )}
 
                   {/* Kullanıcı Adı */}
-                  <li>
-                    <span className="block px-4 py-2 text-gray-800">
-                      {user?.username || "Misafir"}
-                    </span>
-                  </li>
-                  {/* Giriş Yap/Kayıt Ol */}
-                  <li>
-                    <button
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                      onClick={toggleModal}
-                    >
-                      Giriş Yap/Kayıt Ol
-                    </button>
-                  </li>
+                  {token ? (
+                    <>
+                      <li>
+                        <span className="block px-4 py-2 text-gray-800">
+                          {user?.username || "Misafir"}
+                        </span>
+                      </li>
+                      <li>
+                        <button
+                          className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                          onClick={handleLogout}
+                        >
+                          Çıkış Yap
+                        </button>
+                      </li>
+                    </>
+                  ) : (
+                    <li>
+                      <button
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                        onClick={toggleModal}
+                      >
+                        Giriş Yap/Kayıt Ol
+                      </button>
+                    </li>
+                  )}
                 </ul>
               </div>
             )}

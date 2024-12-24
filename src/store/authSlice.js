@@ -69,12 +69,6 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     },
-    loadAuth: (state) => {
-      const storedAuth = getStoredAuth();
-      state.user = storedAuth.user;
-      state.token = storedAuth.token;
-      state.isAuthenticated = !!storedAuth.token;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -125,5 +119,5 @@ axios.interceptors.request.use(
   }
 );
 
-export const { logout, loadAuth } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

@@ -6,12 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 const Menu = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, token } = useSelector((state) => state.auth);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { user, token } = useSelector((state) => state.auth); // Redux'tan kullanıcı ve token bilgilerini al
+  const [showUserMenu, setShowUserMenu] = useState(false); // Dropdown menü kontrolü
 
   const handleLogout = () => {
-    dispatch(logout());
-    setShowUserMenu(false);
+    dispatch(logout()); // Redux logout işlemi
+    setShowUserMenu(false); // Dropdown menüyü kapat
     navigate("/"); // Çıkış sonrası ana sayfaya yönlendirme
   };
 
@@ -45,7 +45,6 @@ const Menu = () => {
                 </svg>
               </button>
 
-              {/* Dropdown Menu */}
               {showUserMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                   <div className="py-1">
