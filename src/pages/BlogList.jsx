@@ -1,46 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import BlogCard from "../components/BlogCard";
-import CategoryList from "../components/CategoryList";
-import axiosInstance from "../api/axios";
+import { fetchBlogs } from "../store/blogsSlice";
 
 const BlogList = () => {
-  const [blogs, setBlogs] = useState([]);
+  const dispatch = useDispatch();
+  const { items: blogs, loading, error } = useSelector((state) => state.blogs);
+
   const [displayedBlogs, setDisplayedBlogs] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("Tümü");
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   const blogsPerPage = 6; // Sayfa başına gösterilecek blog sayısı
 
-  const { status: categoryStatus } = useSelector((state) => state.categories);
-
-  // Blogları kategoriye göre API'den alma
   useEffect(() => {
-    const fetchBlogsByCategory = async () => {
-      setLoading(true);
-      try {
-        let response;
-        if (selectedCategory === "Tümü") {
-          response = await axiosInstance.get("/Blogs"); // Tüm blogları çek
-        } else {
-          response = await axiosInstance.get(
-            `/Category/${selectedCategory}/blogs`
-          ); // Seçilen kategoriye göre blogları çek
-        }
-        setBlogs(response.data);
-        setDisplayedBlogs(response.data.slice(0, blogsPerPage));
-        setCurrentPage(1);
-        setLoading(false);
-      } catch (error) {
-        console.error("API'den veri alınırken hata:", error);
-        setBlogs([]);
-        setDisplayedBlogs([]);
-        setLoading(false);
-      }
-    };
+    dispatch(fetchBlogs()); // Tüm blogları çek
+  }, [dispatch]);
 
-    fetchBlogsByCategory();
-  }, [selectedCategory]);
+  useEffect(() => {
+    const startIndex = 0;
+    const endIndex = currentPage * blogsPerPage;
+    setDisplayedBlogs(blogs.slice(startIndex, endIndex));
+  }, [blogs, currentPage]);
 
   // Sonsuz kaydırma işlevi
   const loadMoreBlogs = () => {
@@ -70,35 +49,23 @@ const BlogList = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [currentPage, blogs, loading]);
 
-  if (categoryStatus === "loading") {
-    return <p>Kategoriler yükleniyor...</p>;
+  if (loading && displayedBlogs.length === 0) {
+    return <p>Bloglar yükleniyor...</p>;
+  }
+
+  if (error) {
+    return <p>Bir hata oluştu: {error}</p>;
   }
 
   return (
     <div className="container mx-auto px-4 py-8 flex max-w-7xl">
-      {/* Kategoriler */}
-      <div className="w-1/4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-          Kategoriler
-        </h2>
-        <CategoryList
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
-      </div>
-
-      {/* Blog Kartları */}
-      <div className="w-3/4 ml-6">
+      <div className="w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading && displayedBlogs.length === 0 ? (
-            <p className="text-gray-600 dark:text-gray-400 w-full text-center">
-              Bloglar yükleniyor...
-            </p>
-          ) : displayedBlogs.length > 0 ? (
+          {displayedBlogs.length > 0 ? (
             displayedBlogs.map((blog) => <BlogCard key={blog.id} blog={blog} />)
           ) : (
             <p className="text-gray-600 dark:text-gray-400 w-full text-center">
-              Seçilen kategori için blog bulunamadı.
+              Blog bulunamadı.
             </p>
           )}
         </div>

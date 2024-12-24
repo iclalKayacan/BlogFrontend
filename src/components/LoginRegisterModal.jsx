@@ -4,19 +4,19 @@ import { login, register } from "../store/authSlice";
 
 const LoginRegisterModal = ({ onClose }) => {
   const dispatch = useDispatch();
-  const { isLoading, error, token } = useSelector((state) => state.auth); // Redux'tan token'ı alıyoruz
+  const { isLoading, error, token } = useSelector((state) => state.auth);
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-    fullName: "", // Sadece kayıt için gerekli
+    fullName: "",
   });
-  const [successMessage, setSuccessMessage] = useState(""); // Başarı mesajı için state
+  const [successMessage, setSuccessMessage] = useState("");
 
   const toggleForm = () => {
     setIsLogin((prev) => !prev);
     setFormData({ username: "", password: "", fullName: "" });
-    setSuccessMessage(""); // Form değiştirildiğinde başarı mesajını sıfırla
+    setSuccessMessage("");
   };
 
   const handleInputChange = (e) => {
@@ -30,16 +30,12 @@ const LoginRegisterModal = ({ onClose }) => {
       const resultAction = await dispatch(
         login({ username: formData.username, password: formData.password })
       );
-
       if (resultAction.type === "auth/login/fulfilled") {
-        // Giriş başarılı
-        setSuccessMessage("Giriş başarılı!"); // Başarı mesajını güncelle
+        setSuccessMessage("Giriş başarılı!");
       }
     } else {
       const resultAction = await dispatch(register(formData));
-
       if (resultAction.type === "auth/register/fulfilled") {
-        // Kayıt başarılı
         setSuccessMessage("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");
       }
     }
@@ -57,9 +53,7 @@ const LoginRegisterModal = ({ onClose }) => {
         <h2 className="text-2xl font-bold mb-4">
           {isLogin ? "Giriş Yap" : "Kayıt Ol"}
         </h2>
-        {/* Hata mesajı */}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {/* Başarı mesajı */}
         {successMessage && (
           <p className="text-green-500 text-center mb-4">{successMessage}</p>
         )}

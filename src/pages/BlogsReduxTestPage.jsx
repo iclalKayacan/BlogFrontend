@@ -1,25 +1,15 @@
-import React, { useEffect, useState } from "react";
-import axiosInstance from "../api/axios"; // Axios instance'ı import ediyoruz
+// src/features/blogs/BlogsReduxTestPage.jsx
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchBlogs } from "../store/blogsSlice"; // Yolunuzu kontrol edin
 
 const BlogsReduxTestPage = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { items: blogs, loading, error } = useSelector((state) => state.blogs);
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const response = await axiosInstance.get("/Blogs");
-        setBlogs(response.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
+    dispatch(fetchBlogs());
+  }, [dispatch]);
 
   if (loading) return <div>Bloglar yükleniyor...</div>;
   if (error) return <div>Hata: {error}</div>;
@@ -38,24 +28,10 @@ const BlogsReduxTestPage = () => {
             {new Date(blog.createdAt).toLocaleString()}
           </p>
           <div>
-            <strong>Categories:</strong>
-            <ul>
-              {blog.categories.map((category) => (
-                <li key={category.id}>{category.name}</li>
-              ))}
-            </ul>
+           
           </div>
           <div>
-            <strong>Comments:</strong>
-            <ul>
-              {blog.comments.map((comment) => (
-                <li key={comment.id}>
-                  <p>
-                    {comment.content} by {comment.author}
-                  </p>
-                </li>
-              ))}
-            </ul>
+           
           </div>
         </li>
       ))}

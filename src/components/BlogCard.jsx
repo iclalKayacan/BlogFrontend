@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import CategoryBadge from "./CategoryBadge";
 
 const BlogCard = ({ blog }) => {
+  // Kategorileri güvenli bir şekilde işle
+  const categories = Array.isArray(blog.categories) ? blog.categories : [];
+
   return (
     <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden h-full flex flex-col">
       {/* Blog Görseli */}
@@ -17,14 +20,10 @@ const BlogCard = ({ blog }) => {
       {/* Kart İçeriği */}
       <div className="p-4 flex flex-col flex-1">
         {/* Kategori Badge */}
-        {blog.categories && (
+        {categories.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
-            {blog.categories.map((category, index) => (
-              <CategoryBadge
-                key={index}
-                category={category.name}
-                color={category.color} // Renk özelliği
-              />
+            {categories.map((category, index) => (
+              <CategoryBadge key={index} category={category} />
             ))}
           </div>
         )}

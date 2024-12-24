@@ -10,8 +10,7 @@ export const login = createAsyncThunk(
         "https://localhost:7079/api/Auth/login",
         credentials
       );
-      // Token ve kullanıcı bilgisi döner
-      return response.data;
+      return response.data; // Token ve kullanıcı bilgisi döner
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
       return thunkAPI.rejectWithValue(
@@ -40,21 +39,49 @@ export const register = createAsyncThunk(
   }
 );
 
+// Async thunk for fetching user details (rehydration)
+export const fetchUser = createAsyncThunk(
+  "auth/fetchUser",
+  async (_, thunkAPI) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return thunkAPI.rejectWithValue("No token found");
+
+    try {
+      const response = await axios.get("https://localhost:7079/api/Auth/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data; // Kullanıcı bilgileri döner
+    } catch (error) {
+      console.error("Fetch user error:", error.response?.data || error.message);
+      return thunkAPI.rejectWithValue("Failed to fetch user data");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: null,
-    token: null,
+    token: localStorage.getItem("authToken") || null, // Başlangıçta token kontrolü
     isLoading: false,
     error: null,
-    isAdmin: false, // Admin kontrolü için
+    isAdmin: false,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAdmin = false;
-      localStorage.removeItem("authToken"); // Token silme
+      localStorage.removeItem("authToken");
+    },
+    initializeAuth: (state, action) => {
+      const storedToken = localStorage.getItem("authToken");
+      if (storedToken) {
+        state.token = storedToken;
+        // Token üzerinden kullanıcı bilgilerini ayarla
+        state.user = action.payload.user || null;
+        state.isAdmin = action.payload.user?.role === "admin";
+      }
     },
   },
   extraReducers: (builder) => {
@@ -90,9 +117,24 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      // Fetch user işlemi (rehydration)
+      .addCase(fetchUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.isAdmin = action.payload.role === "admin";
+      })
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        state.token = null;
+        localStorage.removeItem("authToken"); // Token geçersizse sil
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, initializeAuth } = authSlice.actions;
 export default authSlice.reducer;

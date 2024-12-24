@@ -21,11 +21,21 @@ export const fetchBlogsByCategory = createAsyncThunk(
   }
 );
 
+export const fetchCategoryById = createAsyncThunk(
+  "categories/fetchCategoryById",
+  async (categoryId) => {
+    const response = await axios.get(`${API_BASE_URL}/Category/${categoryId}`);
+    return response.data;
+  }
+);
+
 const categoriesSlice = createSlice({
   name: "categories",
   initialState: {
     categories: [], // Kategoriler
     blogsByCategory: [], // Seçilen kategoriye ait bloglar
+    currentCategory: null, // Yeni eklenen state
+
     status: "idle",
     error: null,
   },
@@ -40,6 +50,17 @@ const categoriesSlice = createSlice({
         state.categories = action.payload;
       })
       .addCase(fetchCategories.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(fetchCategoryById.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchCategoryById.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.currentCategory = action.payload;
+      })
+      .addCase(fetchCategoryById.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })

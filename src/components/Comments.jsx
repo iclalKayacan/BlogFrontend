@@ -13,9 +13,10 @@ const Comments = ({ comments, blogId }) => {
         addComment({
           blogId,
           content: newComment,
+          author: "Current User", // Gerçek kullanıcı adını buraya ekleyin
         })
       );
-      setNewComment(""); // Clear the input
+      setNewComment(""); // Yorum gönderildikten sonra alanı sıfırla
     }
   };
 
@@ -51,11 +52,12 @@ const Comments = ({ comments, blogId }) => {
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Write a comment..."
-          className="w-full p-2 border rounded-md focus:outline-none"
-        ></textarea>
+          className="w-full p-4 border rounded-lg shadow-sm dark:bg-gray-700 dark:text-white"
+          rows="4"
+        />
         <button
           type="submit"
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md"
+          className="mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondaryDark transition duration-200"
         >
           Add Comment
         </button>
