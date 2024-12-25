@@ -137,7 +137,7 @@ const BlogDetails = () => {
           Yorumlar
         </h2>
         <CommentForm blogId={parseInt(id)} />
-        <CommentList comments={blog.comments || []} />
+        <CommentList comments={blog?.comments || []} />
       </div>
     </div>
   );

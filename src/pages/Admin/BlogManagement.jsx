@@ -15,7 +15,7 @@ const BlogManagement = () => {
 
   const [blogs, setBlogs] = useState([]);
   const [editingBlog, setEditingBlog] = useState(null);
-  const [view, setView] = useState("blogs");
+  const [view, setView] = useState("list");
   const [users, setUsers] = useState([
     { id: 1, name: "John Doe", email: "john@example.com" },
     { id: 2, name: "Jane Smith", email: "jane@example.com" },
@@ -122,6 +122,11 @@ const BlogManagement = () => {
     setComments(comments.filter((comment) => comment.id !== commentId));
   };
 
+  const handleEdit = (blog) => {
+    setEditingBlog(blog);
+    setView("form");
+  };
+
   return (
     <div
       className={`${
@@ -134,20 +139,27 @@ const BlogManagement = () => {
       <div className="flex-1 p-4">
         {view === "dashboard" && <AdminDashboard stats={stats} />}
 
-        {view === "blogs" && (
-          <>
-            {editingBlog ? (
-              <AdminBlogEdit blog={editingBlog} onUpdate={handleEditBlog} />
-            ) : (
-              <AdminBlogForm onBlogAdded={handleAddBlog} />
-            )}
-            <AdminBlogList
-              blogs={blogs}
-              onDelete={handleDeleteBlog}
-              onEdit={setEditingBlog}
-            />
-          </>
-        )}
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Blog Yönetimi</h1>
+            <button
+              onClick={() => {
+                setView(view === "list" ? "form" : "list");
+                setEditingBlog(null);
+              }}
+              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition"
+            >
+              {view === "list" ? "Yeni Blog Ekle" : "Blog Listesi"}
+            </button>
+          </div>
+
+          {view === "list" ? (
+            <AdminBlogList onEdit={handleEdit} />
+          ) : (
+            <AdminBlogForm blog={editingBlog} />
+          )}
+        </div>
+
         {view === "users" && (
           <UserManagement
             users={users}
