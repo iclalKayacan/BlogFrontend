@@ -12,6 +12,14 @@ import BlogDetails from "./pages/BlogDetails";
 import BlogManagement from "./pages/Admin/BlogManagement";
 import ThemeProvider from "./contexts/ThemeContext";
 import BlogsReduxTestPage from "./pages/BlogsReduxTestPage";
+import AdminSidebar from "./components/Admin/AdminSidebar";
+import AdminDashboard from "./components/Admin/AdminDashboard";
+import AdminBlogForm from "./components/Admin/AdminBlogForm";
+import AdminBlogList from "./components/Admin/AdminBlogList";
+import CategoryManagement from "./components/Admin/CategoryManagement";
+import UserManagement from "./components/Admin/UserManagement";
+import TagManagement from "./components/Admin/TagManagement";
+import CommentManagement from "./components/Admin/CommentManagement";
 
 function App() {
   const blogs = [
@@ -47,32 +55,42 @@ function App() {
 
             <main className="flex-grow">
               <Routes>
-                {/* Ana Sayfa */}
+                {/* Public Routes */}
                 <Route path="/" element={<Home />} />
+                <Route path="/blog/:id" element={<BlogDetails />} />
 
-                {/* Redux Test Sayfası */}
-                <Route path="/redux-test" element={<BlogsReduxTestPage />} />
-
-                {/* Blog Kartları */}
+                {/* Admin Routes */}
                 <Route
-                  path="/"
+                  path="/admin/*"
                   element={
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {blogs.map((blog) => (
-                        <BlogCard key={blog.id} blog={blog} />
-                      ))}
+                    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+                      <div className="fixed left-0 h-full">
+                        <AdminSidebar />
+                      </div>
+                      <div className="ml-60 flex-1 p-4 overflow-auto">
+                        <Routes>
+                          <Route index element={<AdminDashboard />} />
+                          <Route path="blogs/new" element={<AdminBlogForm />} />
+                          <Route path="blogs" element={<AdminBlogList />} />
+                          <Route
+                            path="blogs/edit/:id"
+                            element={<AdminBlogForm />}
+                          />
+                          <Route
+                            path="categories"
+                            element={<CategoryManagement />}
+                          />
+                          <Route path="users" element={<UserManagement />} />
+                          <Route path="tags" element={<TagManagement />} />
+                          <Route
+                            path="comments"
+                            element={<CommentManagement />}
+                          />
+                        </Routes>
+                      </div>
                     </div>
                   }
                 />
-
-                {/* Blog Detay Sayfası */}
-                <Route path="/blogs/:id" element={<BlogDetails />} />
-
-                {/* Blog Listesi */}
-                <Route path="/blogs" element={<BlogList />} />
-
-                {/* Admin Paneli */}
-                <Route path="/admin/blogs" element={<BlogManagement />} />
               </Routes>
             </main>
 

@@ -1,61 +1,37 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
-const AdminSidebar = ({ setView }) => {
+const menuItems = [
+  { path: "/admin", icon: "🏠", label: "Dashboard" },
+  { path: "/admin/blogs/new", icon: "📄", label: "Blog Yönetimi" },
+  { path: "/admin/categories", icon: "📂", label: "Kategori Yönetimi" },
+  { path: "/admin/users", icon: "👤", label: "Kullanıcı Yönetimi" },
+  { path: "/admin/tags", icon: "🏷️", label: "Etiket Yönetimi" },
+  { path: "/admin/comments", icon: "💬", label: "Yorum Yönetimi" },
+];
+
+const AdminSidebar = () => {
   return (
     <div className="w-60 bg-backgroundDark text-textLight shadow-lg min-h-screen">
       <h2 className="text-2xl font-bold p-4 border-b border-gray-700">
         Admin Paneli
       </h2>
       <ul className="p-4 space-y-4">
-        <li>
-          <button
-            onClick={() => setView("dashboard")}
-            className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
-          >
-            🏠 Dashboard
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => setView("blogs")}
-            className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
-          >
-            📄 Blog Yönetimi
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => setView("users")}
-            className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
-          >
-            👤 Kullanıcı Yönetimi
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => setView("categories")}
-            className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
-          >
-            📂 Kategori Yönetimi
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => setView("tags")}
-            className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
-          >
-            🏷️ Etiket Yönetimi
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => setView("comments")}
-            className="w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition"
-          >
-            💬 Yorum Yönetimi
-          </button>
-        </li>
+        {menuItems.map((item) => (
+          <li key={item.path}>
+            <NavLink
+              to={item.path}
+              className={({ isActive }) =>
+                `w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition ${
+                  isActive ? "text-hoverSunYellow" : ""
+                }`
+              }
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </NavLink>
+          </li>
+        ))}
       </ul>
     </div>
   );

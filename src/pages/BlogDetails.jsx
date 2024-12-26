@@ -15,30 +15,26 @@ const BlogDetails = () => {
     error,
   } = useSelector((state) => state.blogs);
 
-  // Blog'u fetch et
   useEffect(() => {
     if (id) {
       dispatch(fetchBlogById(id));
     }
   }, [dispatch, id]);
 
-  // Yükleme durumu
   if (status === "loading") {
     return <p>Yükleniyor...</p>;
   }
 
-  // Hata durumu
   if (status === "failed") {
     return <p>Hata: {error}</p>;
   }
 
-  // Blog bulunamama durumu
   if (!blog) {
     return <p>Blog bulunamadı!</p>;
   }
 
-  // Kategorileri işle
   const categories = blog.categories?.$values || blog.categories || [];
+  const comments = blog.comments?.$values || blog.comments || [];
 
   return (
     <div className="bg-backgroundLight dark:bg-backgroundDark">
@@ -134,10 +130,10 @@ const BlogDetails = () => {
       {/* Yorumlar Bölümü */}
       <div className="max-w-screen-lg mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-          Yorumlar
+          Yorumlar ({comments.length})
         </h2>
         <CommentForm blogId={parseInt(id)} />
-        <CommentList comments={blog?.comments || []} />
+        <CommentList comments={comments} />
       </div>
     </div>
   );
