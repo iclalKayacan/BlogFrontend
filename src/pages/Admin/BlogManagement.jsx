@@ -139,26 +139,11 @@ const BlogManagement = () => {
       <div className="flex-1 p-4">
         {view === "dashboard" && <AdminDashboard stats={stats} />}
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Blog Yönetimi</h1>
-            <button
-              onClick={() => {
-                setView(view === "list" ? "form" : "list");
-                setEditingBlog(null);
-              }}
-              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition"
-            >
-              {view === "list" ? "Yeni Blog Ekle" : "Blog Listesi"}
-            </button>
-          </div>
-
-          {view === "list" ? (
-            <AdminBlogList onEdit={handleEdit} />
-          ) : (
-            <AdminBlogForm blog={editingBlog} />
-          )}
-        </div>
+        {view === "list" ? (
+          <AdminBlogList onEdit={handleEdit} />
+        ) : (
+          <AdminBlogForm blog={editingBlog} />
+        )}
 
         {view === "users" && (
           <UserManagement

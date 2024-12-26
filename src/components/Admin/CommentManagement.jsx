@@ -15,7 +15,8 @@ const CommentManagement = ({ comments, onApprove, onDelete }) => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-textDark dark:text-textLight mb-6">
-      Yorum Yönetimi</h2>
+        Yorum Yönetimi
+      </h2>
 
       {/* Onaylama Mesajı */}
       {approvedMessage && (
