@@ -5,6 +5,7 @@ import { fetchBlogById } from "../store/blogsSlice";
 import CategoryBadge from "../components/CategoryBadge";
 import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
+import { fetchTags } from "../store/tagsSlice";
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -14,12 +15,17 @@ const BlogDetails = () => {
     status,
     error,
   } = useSelector((state) => state.blogs);
+  const { tags } = useSelector((state) => state.tags);
 
   useEffect(() => {
     if (id) {
       dispatch(fetchBlogById(id));
     }
   }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch(fetchTags());
+  }, [dispatch]);
 
   if (status === "loading") {
     return <p>Yükleniyor...</p>;
@@ -108,21 +114,43 @@ const BlogDetails = () => {
 
         {/* Sağ: Yazar Bilgisi */}
         <aside className="md:w-1/3">
-          <div className="dark:bg-gray-800 bg-white p-6 text-center rounded-lg shadow-md">
-            <img
-              src={blog.authorImage || "https://via.placeholder.com/150"}
-              alt={blog.author || "Yazar"}
-              className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-secondary"
-            />
-            <h3 className="text-xl font-semibold text-textDark dark:text-textLight mb-2">
-              {blog.author || "Yazar Bilgisi Yok"}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              {blog.aboutAuthor || "Yazar hakkında bilgi bulunamadı."}
-            </p>
-            <button className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondaryDark transition duration-200">
-              Read my bio
-            </button>
+          <div className="sticky top-4 space-y-6">
+            {/* Yazar Kartı */}
+            <div className="dark:bg-gray-800 bg-white p-6 text-center rounded-lg shadow-md">
+              <img
+                src={blog.authorImage || "https://via.placeholder.com/150"}
+                alt={blog.author || "Yazar"}
+                className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-secondary"
+              />
+              <h3 className="text-xl font-semibold text-textDark dark:text-textLight mb-2">
+                {blog.author || "Yazar Bilgisi Yok"}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                {blog.aboutAuthor || "Yazar hakkında bilgi bulunamadı."}
+              </p>
+            </div>
+
+            {/* Etiketler Kartı */}
+            {blog.tags && blog.tags.length > 0 && (
+              <div className="dark:bg-gray-800 bg-white p-6 rounded-lg shadow-md">
+                <h4 className="font-semibold text-lg mb-4 text-gray-800 dark:text-white">
+                  Etiketler
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {blog.tags.map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-700 
+                               text-gray-700 dark:text-gray-300 rounded-full 
+                               text-sm hover:bg-gray-200 dark:hover:bg-gray-600 
+                               transition-colors cursor-pointer"
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </aside>
       </div>
