@@ -30,8 +30,9 @@ function App() {
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
+                <Route path="/blogs/:id" element={<BlogDetails />} />
+
                 <Route path="/blogs" element={<BlogList />} />
-                <Route path="/blog/:id" element={<BlogDetails />} />
 
                 {/* Admin Routes */}
                 <Route

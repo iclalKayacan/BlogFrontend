@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaSave, FaTimes } from "react-icons/fa";
 
 const AdminBlogForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -20,12 +21,35 @@ const AdminBlogForm = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+    if (id) {
+      fetchBlog();
+    }
+  }, [id]);
+
+  const fetchBlog = async () => {
+    try {
+      const response = await axios.get(
+        `https://localhost:7079/api/Blogs/${id}`
+      );
+      const blog = response.data;
+      setFormData({
+        title: blog.title,
+        content: blog.content,
+        author: blog.author,
+        summary: blog.summary || "",
+        imageUrl: blog.imageUrl || "",
+        categoryIds: blog.categories?.map((c) => c.id) || [],
+        tagIds: blog.tags?.map((t) => t.id) || [],
+      });
+    } catch (error) {
+      console.error("Blog yükleme hatası:", error);
+      setError("Blog yüklenirken bir hata oluştu");
+    }
+  };
 
   const fetchCategories = async () => {
     try {
       const response = await axios.get("https://localhost:7079/api/Category");
-      console.log("Gelen kategoriler:", response.data);
       setCategories(response.data);
     } catch (error) {
       console.error("Kategori yükleme hatası:", error);
@@ -57,40 +81,22 @@ const AdminBlogForm = () => {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("Oturum bulunamadı. Lütfen tekrar giriş yapın.");
-        return;
+      if (id) {
+        await axios.put(`https://localhost:7079/api/Blogs/${id}`, formData);
+        console.log("Blog başarıyla güncellendi");
+      } else {
+        await axios.post("https://localhost:7079/api/Blogs", formData);
+        console.log("Blog başarıyla eklendi");
       }
-
-      const response = await axios.post(
-        "https://localhost:7079/api/Blogs",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("Blog başarıyla eklendi:", response.data);
       navigate("/admin/blogs");
     } catch (error) {
-      if (error.response?.status === 401) {
-        setError(
-          "Bu işlem için yetkiniz bulunmuyor. Lütfen tekrar giriş yapın."
-        );
-      } else {
-        console.error(
-          "Blog ekleme hatası:",
-          error.response?.data || error.message
-        );
-        setError(
-          error.response?.data?.message || "Blog eklenirken bir hata oluştu"
-        );
-      }
+      console.error(
+        "Blog işlemi hatası:",
+        error.response?.data || error.message
+      );
+      setError(
+        error.response?.data?.message || "Blog işlemi sırasında bir hata oluştu"
+      );
     } finally {
       setLoading(false);
     }
@@ -99,7 +105,7 @@ const AdminBlogForm = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
-        Yeni Blog Ekle
+        {id ? "Blog Düzenle" : "Yeni Blog Ekle"}
       </h1>
 
       {error && (
@@ -230,7 +236,7 @@ const AdminBlogForm = () => {
                      flex items-center gap-2 disabled:opacity-50"
           >
             <FaSave />
-            {loading ? "Kaydediliyor..." : "Kaydet"}
+            {loading ? "Kaydediliyor..." : id ? "Güncelle" : "Kaydet"}
           </button>
         </div>
       </form>
