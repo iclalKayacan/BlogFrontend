@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 const menuItems = [
   { path: "/admin", icon: "🏠", label: "Dashboard" },
-  { path: "/admin/blogs/new", icon: "📄", label: "Blog Yönetimi" },
+  { path: "/admin/blogs", icon: "📄", label: "Blog Yönetimi" },
   { path: "/admin/categories", icon: "📂", label: "Kategori Yönetimi" },
   { path: "/admin/users", icon: "👤", label: "Kullanıcı Yönetimi" },
   { path: "/admin/tags", icon: "🏷️", label: "Etiket Yönetimi" },
@@ -22,8 +22,8 @@ const AdminSidebar = () => {
             <NavLink
               to={item.path}
               className={({ isActive }) =>
-                `w-full text-left flex items-center space-x-2 hover:text-hoverSunYellow transition ${
-                  isActive ? "text-hoverSunYellow" : ""
+                `w-full text-left flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-700 transition ${
+                  isActive ? "bg-gray-700 text-hoverSunYellow" : ""
                 }`
               }
             >

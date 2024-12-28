@@ -10,7 +10,8 @@ export const fetchBlogs = createAsyncThunk(
   "blogs/fetchBlogs",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get("https://localhost:7079/api/Blogs");
+      console.log("API Response:", response.data); // Debug için
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -32,33 +33,28 @@ export const fetchBlogById = createAsyncThunk(
 
 // Yeni blog oluştur
 export const createBlog = createAsyncThunk(
-  "blogs/createBlog",
+  'blogs/createBlog',
   async (blogData, { rejectWithValue }) => {
     try {
       // API'ye gönderilecek veriyi hazırla
       const postData = {
         title: blogData.title,
         content: blogData.content,
-        author: blogData.author || "Anonim", // Varsayılan yazar
+        author: blogData.author || 'Anonim', // Varsayılan yazar
         summary: blogData.content.substring(0, 200), // Özet otomatik oluştur
         imageUrl: blogData.coverImage,
         tagIds: [], // Şimdilik boş bırakıyoruz
         categoryIds: [], // Şimdilik boş bırakıyoruz
       };
 
-      const response = await axios.post(
-        "https://localhost:7079/api/Blogs",
-        postData
-      );
+      const response = await axios.post('https://localhost:7079/api/Blogs', postData);
       return response.data;
     } catch (error) {
       if (error.response) {
         // API'den gelen hata mesajını kullan
-        return rejectWithValue(
-          error.response.data.message || "Blog eklenirken bir hata oluştu"
-        );
+        return rejectWithValue(error.response.data.message || 'Blog eklenirken bir hata oluştu');
       }
-      return rejectWithValue("Sunucuya bağlanırken bir hata oluştu");
+      return rejectWithValue('Sunucuya bağlanırken bir hata oluştu');
     }
   }
 );

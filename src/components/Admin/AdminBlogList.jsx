@@ -1,81 +1,123 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchBlogs, deleteBlog } from "../../store/blogsSlice";
-import { fetchCategories } from "../../store/categoriesSlice";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaFilter } from "react-icons/fa";
 
-const AdminBlogList = ({ onEdit }) => {
-  const dispatch = useDispatch();
-  const { items: blogs, status } = useSelector((state) => state.blogs);
-  const { items: categories } = useSelector((state) => state.categories);
-
-  const [filteredBlogs, setFilteredBlogs] = useState([]);
-  const [filters, setFilters] = useState({
-    category: "",
-    status: "",
-    search: "",
-  });
+const AdminBlogList = () => {
+  const navigate = useNavigate();
+  const [blogs, setBlogs] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   useEffect(() => {
-    dispatch(fetchBlogs());
-    dispatch(fetchCategories());
-  }, [dispatch]);
+    fetchBlogs();
+    fetchCategories();
+  }, []);
 
-  // Filtreleme işlemi
-  useEffect(() => {
-    let result = [...blogs];
-
-    if (filters.category) {
-      result = result.filter((blog) =>
-        blog.categories?.some((cat) => cat.id === parseInt(filters.category))
-      );
+  const fetchBlogs = async () => {
+    try {
+      const response = await axios.get("https://localhost:7079/api/Blogs");
+      setBlogs(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Blog yükleme hatası:", error);
+      setError("Bloglar yüklenirken bir hata oluştu");
+      setLoading(false);
     }
+  };
 
-    if (filters.status) {
-      result = result.filter((blog) => blog.status === filters.status);
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("https://localhost:7079/api/Category");
+      console.log("Kategoriler:", response.data);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Kategori yükleme hatası:", error);
     }
-
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      result = result.filter(
-        (blog) =>
-          blog.title.toLowerCase().includes(searchLower) ||
-          blog.author.toLowerCase().includes(searchLower)
-      );
-    }
-
-    setFilteredBlogs(result);
-  }, [blogs, filters]);
+  };
 
   const handleDelete = async (id) => {
     if (window.confirm("Bu blogu silmek istediğinize emin misiniz?")) {
       try {
-        await dispatch(deleteBlog(id)).unwrap();
+        await axios.delete(`https://localhost:7079/api/Blogs/${id}`);
+        setBlogs(blogs.filter((blog) => blog.id !== id));
       } catch (error) {
         console.error("Blog silme hatası:", error);
+        alert("Blog silinirken bir hata oluştu");
       }
     }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("tr-TR");
-  };
+  const filteredBlogs = blogs.filter((blog) => {
+    const matchesSearch = blog.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || blog.status === statusFilter;
+    const matchesCategory =
+      categoryFilter === "all" ||
+      blog.categories?.some((cat) => cat.id.toString() === categoryFilter);
+    return matchesSearch && matchesStatus && matchesCategory;
+  });
+
+  if (loading) {
+    return (
+      <div className="p-4">
+        <div className="animate-pulse space-y-4">
+          {[...Array(5)].map((_, index) => (
+            <div
+              key={index}
+              className="h-16 bg-gray-100 dark:bg-gray-800 rounded-lg"
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
-        Blog Listesi
-      </h2>
-
-      {/* Filtreler */}
-      <div className="mb-4 flex gap-4">
-        <select
-          value={filters.category}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, category: e.target.value }))
-          }
-          className="p-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+    <div className="space-y-6 p-6">
+      {/* Üst Başlık ve Yeni Blog Butonu */}
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Blog Yönetimi
+        </h1>
+        <button
+          onClick={() => navigate("/admin/blogs/new")}
+          className="bg-primary text-white px-6 py-2 rounded-lg flex items-center gap-2 transform transition hover:scale-105 shadow-lg"
         >
-          <option value="">Tüm Kategoriler</option>
+          <FaPlus />
+          <span>Yeni Blog</span>
+        </button>
+      </div>
+
+      {/* Filtreleme Araçları */}
+      <div className="flex flex-wrap gap-4 items-center mb-6">
+        <div className="relative w-64">
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Blog ara..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
+                     border border-gray-200 dark:border-gray-700 focus:ring-2 
+                     focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
+                   border border-gray-200 dark:border-gray-700 focus:ring-2 
+                   focus:ring-blue-500 cursor-pointer"
+        >
+          <option value="all">Tüm Kategoriler</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -84,111 +126,97 @@ const AdminBlogList = ({ onEdit }) => {
         </select>
 
         <select
-          value={filters.status}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, status: e.target.value }))
-          }
-          className="p-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
+                   border border-gray-200 dark:border-gray-700 focus:ring-2 
+                   focus:ring-blue-500 cursor-pointer"
         >
-          <option value="">Tüm Durumlar</option>
+          <option value="all">Tüm Durumlar</option>
           <option value="taslak">Taslak</option>
           <option value="yayında">Yayında</option>
         </select>
-
-        <input
-          type="text"
-          placeholder="Ara..."
-          value={filters.search}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, search: e.target.value }))
-          }
-          className="p-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500"
-        />
       </div>
 
-      {/* Tablo */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-gray-800 shadow-md rounded-lg">
-          <thead className="bg-gray-100 dark:bg-gray-700">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+      {/* Blog Listesi */}
+      <div className="overflow-x-auto rounded-lg">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50 dark:bg-gray-800 text-left">
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Başlık
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Yazar
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                Kategoriler
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Durum
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Tarih
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 İşlemler
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
-            {filteredBlogs.map((blog) => (
-              <tr
-                key={blog.id}
-                className="hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            {filteredBlogs.length > 0 ? (
+              filteredBlogs.map((blog) => (
+                <tr
+                  key={blog.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <td className="px-6 py-4 text-gray-800 dark:text-gray-200">
                     {blog.title}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900 dark:text-gray-300">
+                  </td>
+                  <td className="px-6 py-4 text-gray-800 dark:text-gray-200">
                     {blog.author}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex flex-wrap gap-1">
-                    {blog.categories?.map((category) => (
-                      <span
-                        key={category.id}
-                        className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full"
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full ${
+                        blog.status === "yayında"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                          : "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+                      }`}
+                    >
+                      {blog.status || "Taslak"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-800 dark:text-gray-200">
+                    {new Date(blog.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => navigate(`/admin/blogs/edit/${blog.id}`)}
+                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 
+                                 dark:hover:text-blue-300 transition-colors"
                       >
-                        {category.name}
-                      </span>
-                    ))}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      blog.status === "yayında"
-                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                    }`}
-                  >
-                    {blog.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
-                  {new Date(blog.createdAt).toLocaleDateString("tr-TR")}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => onEdit(blog)}
-                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4"
-                  >
-                    Düzenle
-                  </button>
-                  <button
-                    onClick={() => handleDelete(blog.id)}
-                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                  >
-                    Sil
-                  </button>
+                        <FaEdit size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(blog.id)}
+                        className="text-red-500 hover:text-red-700 dark:text-red-400 
+                                 dark:hover:text-red-300 transition-colors"
+                      >
+                        <FaTrash size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="5"
+                  className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                >
+                  Blog bulunamadı
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

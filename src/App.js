@@ -1,17 +1,14 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Provider } from "react-redux"; // Redux Provider'ı ekliyoruz
-import store from "./store/store"; // Redux Store'u import ediyoruz
+import { Provider } from "react-redux";
+import store from "./store/store";
 import Header from "./components/Header";
 import BlogList from "./pages/BlogList";
 import Home from "./pages/Home";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
-import BlogCard from "./components/BlogCard";
 import BlogDetails from "./pages/BlogDetails";
-import BlogManagement from "./pages/Admin/BlogManagement";
 import ThemeProvider from "./contexts/ThemeContext";
-import BlogsReduxTestPage from "./pages/BlogsReduxTestPage";
 import AdminSidebar from "./components/Admin/AdminSidebar";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import AdminBlogForm from "./components/Admin/AdminBlogForm";
@@ -22,30 +19,6 @@ import TagManagement from "./components/Admin/TagManagement";
 import CommentManagement from "./components/Admin/CommentManagement";
 
 function App() {
-  const blogs = [
-    {
-      id: 1,
-      title: "Blog Başlık 1",
-      summary: "Bu, Blog 1'in kısa özetidir.",
-      image: "https://via.placeholder.com/400x200",
-      category: "Teknoloji",
-    },
-    {
-      id: 2,
-      title: "Blog Başlık 2",
-      summary: "Bu, Blog 2'nin kısa özetidir.",
-      image: "https://via.placeholder.com/400x200",
-      category: "Sağlık",
-    },
-    {
-      id: 3,
-      title: "Blog Başlık 3",
-      summary: "Bu, Blog 3'ün kısa özetidir.",
-      image: "https://via.placeholder.com/400x200",
-      category: "Eğitim",
-    },
-  ];
-
   return (
     <Provider store={store}>
       <ThemeProvider>
@@ -57,6 +30,7 @@ function App() {
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
+                <Route path="/blogs" element={<BlogList />} />
                 <Route path="/blog/:id" element={<BlogDetails />} />
 
                 {/* Admin Routes */}
@@ -95,7 +69,6 @@ function App() {
             </main>
 
             <Footer />
-
             <ScrollToTop />
           </div>
         </Router>
