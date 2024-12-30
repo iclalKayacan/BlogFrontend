@@ -2,11 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaSave, FaTimes } from "react-icons/fa";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const AdminBlogForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  // Kategori ve Etiket listelerini tutmak için state'ler
   const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+
+  // Form verisi
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -14,18 +21,22 @@ const AdminBlogForm = () => {
     summary: "",
     imageUrl: "",
     categoryIds: [],
-    tagIds: [],
+    tagIds: [], // Etiket ID'leri bu dizi içinde tutulacak
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Bileşen ilk yüklendiğinde ya da "id" değiştiğinde
   useEffect(() => {
     fetchCategories();
+    fetchTags(); // Etiketleri de çekelim
     if (id) {
       fetchBlog();
     }
   }, [id]);
 
+  // Blog verisini düzenleme modunda (id varsa) çekelim
   const fetchBlog = async () => {
     try {
       const response = await axios.get(
@@ -47,6 +58,7 @@ const AdminBlogForm = () => {
     }
   };
 
+  // Kategorileri çekelim
   const fetchCategories = async () => {
     try {
       const response = await axios.get("https://localhost:7079/api/Category");
@@ -57,6 +69,18 @@ const AdminBlogForm = () => {
     }
   };
 
+  // Etiketleri çekelim
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get("https://localhost:7079/api/Tags");
+      setTags(response.data);
+    } catch (error) {
+      console.error("Etiket yükleme hatası:", error);
+      setError("Etiketler yüklenirken bir hata oluştu");
+    }
+  };
+
+  // Form inputlarının genel değişim kontrolü
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -65,6 +89,15 @@ const AdminBlogForm = () => {
     }));
   };
 
+  // Zengin metin editörü için ayrı bir onChange
+  const handleContentChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      content: value,
+    }));
+  };
+
+  // Çoklu kategori seçimi
   const handleCategoryChange = (e) => {
     const selectedOptions = Array.from(e.target.selectedOptions, (option) =>
       parseInt(option.value)
@@ -75,6 +108,18 @@ const AdminBlogForm = () => {
     }));
   };
 
+  // Çoklu etiket seçimi
+  const handleTagChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, (option) =>
+      parseInt(option.value)
+    );
+    setFormData((prev) => ({
+      ...prev,
+      tagIds: selectedOptions,
+    }));
+  };
+
+  // Form gönderimi
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -82,9 +127,11 @@ const AdminBlogForm = () => {
 
     try {
       if (id) {
+        // Güncelleme
         await axios.put(`https://localhost:7079/api/Blogs/${id}`, formData);
         console.log("Blog başarıyla güncellendi");
       } else {
+        // Yeni ekleme
         await axios.post("https://localhost:7079/api/Blogs", formData);
         console.log("Blog başarıyla eklendi");
       }
@@ -115,6 +162,7 @@ const AdminBlogForm = () => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Başlık */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Başlık
@@ -126,11 +174,12 @@ const AdminBlogForm = () => {
             onChange={handleChange}
             required
             className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
-                     border border-gray-200 dark:border-gray-700 focus:ring-2 
-                     focus:ring-blue-500 focus:border-transparent"
+                       border border-gray-200 dark:border-gray-700 focus:ring-2 
+                       focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
+        {/* Yazar */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Yazar
@@ -142,29 +191,26 @@ const AdminBlogForm = () => {
             onChange={handleChange}
             required
             className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
-                     border border-gray-200 dark:border-gray-700 focus:ring-2 
-                     focus:ring-blue-500 focus:border-transparent"
+                       border border-gray-200 dark:border-gray-700 focus:ring-2 
+                       focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
+        {/* İçerik */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             İçerik
           </label>
-          <textarea
-            name="content"
+          <ReactQuill
             value={formData.content}
-            onChange={handleChange}
-            required
-            rows="6"
-            className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
-                     border border-gray-200 dark:border-gray-700 focus:ring-2 
-                     focus:ring-blue-500 focus:border-transparent"
+            onChange={handleContentChange}
+            className="h-96"
           />
         </div>
 
+        {/* Özet */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 mt-14">
             Özet
           </label>
           <textarea
@@ -173,11 +219,12 @@ const AdminBlogForm = () => {
             onChange={handleChange}
             rows="3"
             className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
-                     border border-gray-200 dark:border-gray-700 focus:ring-2 
-                     focus:ring-blue-500 focus:border-transparent"
+                       border border-gray-200 dark:border-gray-700 focus:ring-2 
+                       focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
+        {/* Resim URL */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Resim URL
@@ -188,11 +235,12 @@ const AdminBlogForm = () => {
             value={formData.imageUrl}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
-                     border border-gray-200 dark:border-gray-700 focus:ring-2 
-                     focus:ring-blue-500 focus:border-transparent"
+                       border border-gray-200 dark:border-gray-700 focus:ring-2 
+                       focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
+        {/* Kategoriler */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Kategoriler
@@ -203,8 +251,8 @@ const AdminBlogForm = () => {
             value={formData.categoryIds}
             onChange={handleCategoryChange}
             className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
-                     border border-gray-200 dark:border-gray-700 focus:ring-2 
-                     focus:ring-blue-500 focus:border-transparent min-h-[120px]"
+                       border border-gray-200 dark:border-gray-700 focus:ring-2 
+                       focus:ring-blue-500 focus:border-transparent min-h-[120px]"
           >
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
@@ -217,13 +265,39 @@ const AdminBlogForm = () => {
           </p>
         </div>
 
+        {/* Etiketler */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Etiketler
+          </label>
+          <select
+            multiple
+            name="tagIds"
+            value={formData.tagIds}
+            onChange={handleTagChange}
+            className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 
+                       border border-gray-200 dark:border-gray-700 focus:ring-2 
+                       focus:ring-blue-500 focus:border-transparent min-h-[120px]"
+          >
+            {tags.map((tag) => (
+              <option key={tag.id} value={tag.id}>
+                {tag.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-sm text-gray-500 mt-1">
+            Birden fazla etiket seçmek için Ctrl/Cmd tuşunu basılı tutun
+          </p>
+        </div>
+
+        {/* Butonlar */}
         <div className="flex justify-end gap-4">
           <button
             type="button"
             onClick={() => navigate("/admin/blogs")}
             className="px-6 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 
-                     dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 
-                     dark:text-gray-200 flex items-center gap-2"
+                       dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 
+                       dark:text-gray-200 flex items-center gap-2"
           >
             <FaTimes />
             İptal
@@ -231,9 +305,8 @@ const AdminBlogForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 
-                     hover:from-blue-600 hover:to-indigo-700 text-white 
-                     flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2 rounded-lg bg-primary text-white 
+                       flex items-center gap-2 disabled:opacity-50"
           >
             <FaSave />
             {loading ? "Kaydediliyor..." : id ? "Güncelle" : "Kaydet"}
