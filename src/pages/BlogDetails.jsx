@@ -10,35 +10,42 @@ import { fetchTags } from "../store/tagsSlice";
 const BlogDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+
+  // blogsSlice içinden currentBlog, status, error gibi değerleri çekiyoruz
   const {
     currentBlog: blog,
     status,
     error,
   } = useSelector((state) => state.blogs);
+
+  // tagsSlice içinden mevcut etiketler
   const { tags } = useSelector((state) => state.tags);
 
+  // Sayfa açıldığında veya id değiştiğinde, ilgili blogu çek
   useEffect(() => {
     if (id) {
       dispatch(fetchBlogById(id));
     }
   }, [dispatch, id]);
 
+  // Etiket listesini de çekelim (Örneğin sağ tarafta gösterilecekse)
   useEffect(() => {
     dispatch(fetchTags());
   }, [dispatch]);
 
+  // Yüklenme durumu
   if (status === "loading") {
     return <p>Yükleniyor...</p>;
   }
-
   if (status === "failed") {
     return <p>Hata: {error}</p>;
   }
-
+  // Blog bulunamadıysa
   if (!blog) {
     return <p>Blog bulunamadı!</p>;
   }
 
+  // Kategorileri ve Yorumları düzgün şekilde okuyalım
   const categories = blog.categories?.$values || blog.categories || [];
   const comments = blog.comments?.$values || blog.comments || [];
 
@@ -47,7 +54,8 @@ const BlogDetails = () => {
       {/* Üst Görsel */}
       <div className="relative w-full">
         <img
-          src={blog.image || "https://via.placeholder.com/1200x600"}
+          // DİKKAT: Burada blog.image yerine blog.imageUrl kullanıyoruz
+          src={blog.imageUrl || "https://via.placeholder.com/1200x600"}
           alt={blog.title}
           className="w-full h-[450px] md:h-[600px] object-cover"
         />
@@ -141,9 +149,9 @@ const BlogDetails = () => {
                     <span
                       key={tag.id}
                       className="px-3 py-1 bg-gray-100 dark:bg-gray-700 
-                               text-gray-700 dark:text-gray-300 rounded-full 
-                               text-sm hover:bg-gray-200 dark:hover:bg-gray-600 
-                               transition-colors cursor-pointer"
+                                 text-gray-700 dark:text-gray-300 rounded-full 
+                                 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 
+                                 transition-colors cursor-pointer"
                     >
                       {tag.name}
                     </span>

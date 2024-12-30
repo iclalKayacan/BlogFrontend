@@ -3,20 +3,16 @@ import { Link } from "react-router-dom";
 import CategoryBadge from "./CategoryBadge";
 
 const BlogCard = ({ blog }) => {
-  // Kategorileri işle
-  let categories = [];
-
   // Eğer blog.categories bir dizi ise direkt ata, eğer `$values` varsa içinden al
-  if (blog.categories) {
-    categories = blog.categories.$values || blog.categories;
-  }
+  const categories = blog.categories?.$values || blog.categories || [];
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden h-full flex flex-col">
       {/* Blog Görseli */}
       <div className="w-full h-48 bg-gray-300">
         <img
-          src={blog.image || "https://via.placeholder.com/300x200"}
+          // Backend'de "ImageUrl" alanı varsa:
+          src={blog.imageUrl || "https://via.placeholder.com/300x200"}
           alt={blog.title}
           className="w-full h-full object-cover"
         />
@@ -31,7 +27,7 @@ const BlogCard = ({ blog }) => {
               <CategoryBadge
                 key={category.id}
                 category={category.name}
-                color={category.color} // API'den gelen rengi kullan
+                color={category.color}
               />
             ))}
           </div>
