@@ -12,7 +12,8 @@ const menuItems = [
 
 const AdminSidebar = () => {
   return (
-    <div className="w-60 bg-backgroundDark text-textLight shadow-lg min-h-screen">
+
+    <div className="w-60 bg-backgroundDark text-textLight shadow-lg fixed top-0 left-0 h-screen overflow-y-auto">
       <h2 className="text-2xl font-bold p-4 border-b border-gray-700">
         Admin Paneli
       </h2>
