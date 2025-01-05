@@ -107,20 +107,30 @@ const BlogDetails = () => {
         </div>
       </div>
 
-      {/* Alt İçerik */}
+      {/* İçerik ve Yazar Bilgisi Alanı */}
       <div className="max-w-screen-lg mx-auto flex flex-col md:flex-row gap-8 py-8 px-4">
-        {/* Sol: Blog İçeriği */}
-        <article className="md:w-2/3 leading-relaxed text-gray-700 dark:text-textLight">
-          {blog.content
-            ? blog.content.split("\n").map((paragraph, index) => (
-                <React.Fragment key={index}>
-                  <p className="mb-4">{paragraph}</p>
-                </React.Fragment>
-              ))
-            : "İçerik bulunamadı."}
-        </article>
+        {/* Sol: Blog İçeriği + Yorumlar */}
+        <div className="md:w-2/3 leading-relaxed text-gray-700 dark:text-textLight">
+          {/* Blog İçeriği */}
+          <article className="mb-8 leading-relaxed text-gray-700 dark:text-textLight">
+            {blog.content ? (
+              <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+            ) : (
+              "İçerik bulunamadı."
+            )}
+          </article>
 
-        {/* Sağ: Yazar Bilgisi */}
+          {/* Yorumlar Bölümü */}
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+              Yorumlar ({comments.length})
+            </h2>
+            <CommentForm blogId={parseInt(id)} />
+            <CommentList comments={comments} />
+          </div>
+        </div>
+
+        {/* Sağ: Yazar ve Etiket Bilgisi */}
         <aside className="md:w-1/3">
           <div className="sticky top-4 space-y-6">
             {/* Yazar Kartı */}
@@ -161,15 +171,6 @@ const BlogDetails = () => {
             )}
           </div>
         </aside>
-      </div>
-
-      {/* Yorumlar Bölümü */}
-      <div className="max-w-screen-lg mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-          Yorumlar ({comments.length})
-        </h2>
-        <CommentForm blogId={parseInt(id)} />
-        <CommentList comments={comments} />
       </div>
     </div>
   );

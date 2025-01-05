@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaSave, FaTimes } from "react-icons/fa";
@@ -8,6 +8,9 @@ import "react-quill/dist/quill.snow.css";
 const AdminBlogForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  // ReactQuill referansı (içerik içine resim eklemek için gerekiyor)
+  const quillRef = useRef(null);
 
   // Kategori ve Etiket listelerini tutmak için state'ler
   const [categories, setCategories] = useState([]);
@@ -19,12 +22,12 @@ const AdminBlogForm = () => {
     content: "",
     author: "",
     summary: "",
-    imageUrl: "",
+    imageUrl: "", // Kapak resmi URL
     categoryIds: [],
     tagIds: [],
   });
 
-  // Resim seçimi için ekstra state
+  // Kapak resmi seçimi için
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [loading, setLoading] = useState(false);
@@ -89,7 +92,7 @@ const AdminBlogForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ReactQuill için ayrı handle
+  // ReactQuill içeriği için ayrı handle
   const handleContentChange = (value) => {
     setFormData((prev) => ({ ...prev, content: value }));
   };
@@ -110,45 +113,124 @@ const AdminBlogForm = () => {
     setFormData((prev) => ({ ...prev, tagIds: selectedOptions }));
   };
 
-  // 4) Dosya seçilince state'e kaydet
+  // -------------------------------------------------------
+  // A) KAPAK RESMİ (Cover Image) YÜKLEME İŞLEMLERİ
+  // -------------------------------------------------------
+  // 4) Dosya seçilince state'e kaydet (kapak resmi)
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0] || null);
   };
 
-  // 5) "Sunucuya Yükle" butonuna basınca
+  // 5) "Sunucuya Yükle" butonuna basınca (kapak resmi)
+  //    (Bunu isterseniz base64 değil, sunucuya yüklüyor şeklinde bırakabilirsiniz)
   const handleUploadImage = async () => {
     if (!selectedFile) {
-      alert("Lütfen bir resim seçin.");
+      alert("Lütfen bir kapak resmi seçin.");
       return;
     }
     try {
-      // Örneğin, AdminBlogForm içinde:
-      const formData = new FormData();
-      formData.append("file", selectedFile);
+      const formDataToUpload = new FormData();
+      formDataToUpload.append("file", selectedFile);
 
       const response = await axios.post(
-        "https://localhost:7079/api/Image/upload",
-        formData,
+        "https://localhost:7079/api/Image/upload", // Kapak resmi endpoint
+        formDataToUpload,
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      console.log(response.data.url); // Dönen tam URL
 
-      // Sunucunun döndürdüğü { url: "/uploads/xxx.jpg" }
+      // Sunucunun döndürdüğü { url: "/uploads/xxx.jpg" } örneğindeki gibi
       const uploadedUrl = response.data.url;
-      console.log("Yüklenen resmin URL'si:", uploadedUrl);
+      console.log("Kapak resmi yüklendi, URL:", uploadedUrl);
 
-      // Blog formuna imageUrl olarak koy
+      // Bu URL'yi formData'ya kapak resmi olarak kaydediyoruz
       setFormData((prev) => ({ ...prev, imageUrl: uploadedUrl }));
-      alert("Resim başarıyla yüklendi, form alanına eklendi.");
+      alert("Kapak resmi başarıyla yüklendi.");
     } catch (error) {
-      console.error("Resim yükleme hatası:", error);
-      alert("Resim yükleme sırasında bir hata oluştu.");
+      console.error("Kapak resmi yükleme hatası:", error);
+      alert("Kapak resmi yükleme sırasında bir hata oluştu.");
     }
   };
 
+  // -------------------------------------------------------
+  // B) İÇERİK İÇİ RESİM (Content Image) - BASE64 EKLEME
+  // -------------------------------------------------------
+  /**
+   * Quill üzerindeki "image" butonuna basılınca çalışacak handler.
+   * Bu kez sunucuya yüklemiyoruz, FileReader ile doğrudan base64 ekliyoruz.
+   */
+  const handleQuillImageUpload = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files ? input.files[0] : null;
+      if (!file) return;
+
+      try {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64String = e.target?.result; // "data:image/png;base64,...."
+
+          // Quill editöre göm
+          const quillEditor = quillRef.current?.getEditor();
+          if (quillEditor) {
+            const range = quillEditor.getSelection(true);
+            quillEditor.insertEmbed(range.index, "image", base64String, "user");
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error("İçerik içine resim ekleme hatası:", error);
+        alert("İçerik resmi yüklenirken bir hata oluştu.");
+      }
+    };
+  };
+
+  // -------------------------------------------------------
+  // Quill’in toolbar ve format ayarları
+  // -------------------------------------------------------
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, false] }],
+          ["bold", "italic", "underline", "strike", "blockquote"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["link", "image"], // "image" butonu burada
+          ["clean"],
+        ],
+        handlers: {
+          // Artık base64 fonksiyonunu kullanıyoruz
+          image: handleQuillImageUpload,
+        },
+      },
+    }),
+    []
+  );
+
+  const formats = useMemo(
+    () => [
+      "header",
+      "bold",
+      "italic",
+      "underline",
+      "strike",
+      "blockquote",
+      "list",
+      "bullet",
+      "link",
+      "image",
+    ],
+    []
+  );
+
+  // -------------------------------------------------------
   // 6) Blog kaydet/güncelle
+  // -------------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -223,9 +305,12 @@ const AdminBlogForm = () => {
         <div>
           <label className="block text-sm font-medium mb-1">İçerik</label>
           <ReactQuill
+            ref={quillRef}
             value={formData.content}
             onChange={handleContentChange}
-            className="h-96"
+            modules={modules}
+            formats={formats}
+            className="min-h-[300px]"
           />
         </div>
 
@@ -242,9 +327,9 @@ const AdminBlogForm = () => {
           />
         </div>
 
-        {/*  Resim Yükleme */}
+        {/* KAPAK RESMİ YÜKLEME */}
         <div>
-          <label className="block text-sm font-medium mb-1">Resim Yükle</label>
+          <label className="block text-sm font-medium mb-1">Kapak Resmi</label>
           <input
             type="file"
             accept="image/*"
@@ -261,13 +346,15 @@ const AdminBlogForm = () => {
             onClick={handleUploadImage}
             className="mt-2 px-4 py-2 bg-primary text-white rounded-lg"
           >
-            Sunucuya Yükle
+            Kapak Resmini Yükle
           </button>
         </div>
 
-        {/* Resim URL */}
+        {/* Kapak Resmi URL */}
         <div>
-          <label className="block text-sm font-medium mb-1">Resim URL</label>
+          <label className="block text-sm font-medium mb-1">
+            Kapak Resmi URL
+          </label>
           <input
             type="text"
             name="imageUrl"

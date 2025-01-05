@@ -4,24 +4,25 @@ import axios from "axios";
 const API_BASE_URL = "https://localhost:7079/api";
 
 // Yorum ekleme
+// commentsSlice.js (güncellenmiş)
 export const addComment = createAsyncThunk(
   "comments/addComment",
   async (commentData, { rejectWithValue, getState }) => {
     try {
       const token = getState().auth.token;
-      const user = getState().auth.user; // Kullanıcı bilgisini al
+      const user = getState().auth.user;
 
       if (!token) {
         throw new Error("Oturum açmanız gerekiyor!");
       }
 
-      // Backend'in beklediği formata uygun veri gönder
       const response = await axios.post(
         `${API_BASE_URL}/Comments`,
         {
           Content: commentData.Content,
+          Author: user?.username || user?.email,
           BlogId: commentData.BlogId,
-          Author: user?.username || user?.email || commentData.Author, // Kullanıcı bilgisini ekle
+          ParentCommentId: commentData.ParentCommentId || null, // yeni eklendi
         },
         {
           headers: {
@@ -31,14 +32,8 @@ export const addComment = createAsyncThunk(
         }
       );
 
-      console.log("API Response:", response.data);
       return response.data;
     } catch (err) {
-      // Özel hata mesajları
-      if (err.response?.data?.errors?.Author) {
-        return rejectWithValue("Bir hata oluştu, lütfen tekrar deneyin.");
-      }
-
       return rejectWithValue(
         err.response?.data?.message ||
           err.message ||
